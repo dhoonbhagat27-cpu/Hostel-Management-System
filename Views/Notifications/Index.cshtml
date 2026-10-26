@@ -1,0 +1,73 @@
+@model IEnumerable<HostelEase.Models.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Notifications & Activity Alerts</h4>
+        <p class="text-muted small mb-0">System updates, room allocations, fee receipts, and ticket statuses</p>
+    </div>
+    @if (Model.Any(n => !n.IsRead))
+    {
+        <form asp-action="MarkAllAsRead" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary-custom btn-sm">
+                <i class="bi bi-check-all me-1"></i> Mark All as Read
+            </button>
+        </form>
+    }
+</div>
+
+<div class="card card-custom">
+    @if (Model.Any())
+    {
+        <div class="list-group list-group-flush">
+            @foreach (var n in Model)
+            {
+                <div class="list-group-item p-3 @(n.IsRead ? "bg-white" : "bg-light") border-bottom">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="p-2 rounded-circle @(n.Type == "Success" ? "bg-success-subtle text-success" : n.Type == "Warning" ? "bg-warning-subtle text-warning" : n.Type == "Danger" ? "bg-danger-subtle text-danger" : "bg-primary-subtle text-primary")" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi @(n.Type == "Success" ? "bi-check-circle" : n.Type == "Warning" ? "bi-exclamation-triangle" : n.Type == "Danger" ? "bi-shield-exclamation" : "bi-bell") fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold @(n.IsRead ? "text-dark" : "text-primary")">@n.Title</h6>
+                                <p class="mb-1 text-secondary small">@n.Message</p>
+                                <small class="text-muted" style="font-size: 0.75rem;">@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+
+                                @if (!string.IsNullOrEmpty(n.LinkUrl))
+                                {
+                                    <a href="@n.LinkUrl" class="small text-primary text-decoration-none ms-2">
+                                        View Details &rarr;
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            @if (!n.IsRead)
+                            {
+                                <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-2 small" title="Mark as Read">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-muted border small">Read</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-bell-slash fs-1 d-block mb-2 text-secondary"></i>
+            No notifications available.
+        </div>
+    }
+</div>

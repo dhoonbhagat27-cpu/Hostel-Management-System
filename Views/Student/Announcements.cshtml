@@ -1,0 +1,51 @@
+@model IEnumerable<HostelEase.Models.Announcement>
+@{
+    ViewData["Title"] = "Hostel Announcements";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Notices & Announcements</h4>
+        <p class="text-muted small mb-0">Official notices from administration, wardens, and mess committees</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    @if (Model.Any())
+    {
+        @foreach (var ann in Model)
+        {
+            <div class="col-md-6">
+                <div class="card card-custom h-100 p-4 mb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge @(ann.Priority == "Urgent" ? "bg-danger" : ann.Priority == "Important" ? "bg-warning text-dark" : "bg-primary")">
+                            @ann.Priority Priority
+                        </span>
+                        <small class="text-muted">@ann.PublishDate.ToString("dd MMM yyyy, hh:mm tt")</small>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-2">@ann.Title</h5>
+                    <p class="text-secondary small leading-relaxed flex-grow-1 mb-3">@ann.Content</p>
+
+                    <div class="border-top pt-2 d-flex justify-content-between align-items-center small text-muted">
+                        <span>
+                            <i class="bi bi-person-fill text-primary me-1"></i>
+                            @(ann.Hostel != null ? $"{ann.Hostel.Name} Only" : "All Residents")
+                        </span>
+                        @if (ann.ExpiryDate.HasValue)
+                        {
+                            <span>Expires: @ann.ExpiryDate.Value.ToString("dd MMM yyyy")</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-bell-slash fs-1 d-block mb-2 text-secondary"></i>
+            No active announcements found for your hostel block.
+        </div>
+    }
+</div>

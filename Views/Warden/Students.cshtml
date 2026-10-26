@@ -1,0 +1,77 @@
+@model IEnumerable<HostelEase.Models.Student>
+@{
+    ViewData["Title"] = "Hostel Students";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Residents Directory</h4>
+        <p class="text-muted small mb-0">Active student residents residing in your assigned hostel block</p>
+    </div>
+    <a asp-controller="Students" asp-action="Create" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Register Student Directly
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Allocated Room</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Contact</th>
+                    <th>Guardian</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var s in Model)
+                    {
+                        var activeAlloc = s.Allocations.FirstOrDefault();
+                        <tr>
+                            <td class="fw-semibold">@s.StudentId</td>
+                            <td>
+                                <div class="fw-bold text-dark">@s.FullName</div>
+                                <div class="small text-muted">@s.Email</div>
+                            </td>
+                            <td>
+                                @if (activeAlloc?.Bed?.Room != null)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        Room @activeAlloc.Bed.Room.RoomNumber [Bed @activeAlloc.Bed.BedNumber]
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Unassigned</span>
+                                }
+                            </td>
+                            <td>@s.Department</td>
+                            <td>@s.AcademicYear</td>
+                            <td class="small">@s.PhoneNumber</td>
+                            <td>
+                                <div class="small fw-semibold">@s.GuardianName</div>
+                                <div class="small text-muted">@s.GuardianContact</div>
+                            </td>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-primary-custom py-0 px-2">
+                                    Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No students currently allocated to this hostel block.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

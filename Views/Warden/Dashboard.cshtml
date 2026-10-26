@@ -1,0 +1,267 @@
+@model HostelEase.ViewModels.WardenDashboardViewModel
+@{
+    ViewData["Title"] = "Warden Dashboard";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">
+            <i class="bi bi-building text-primary me-2"></i>
+            @(Model.AssignedHostel?.Name ?? "Assigned Hostel Overview")
+        </h4>
+        <p class="text-muted small mb-0">Warden Supervisory Dashboard &middot; Real-time Hostel Operations</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="RoomAvailability" class="btn btn-outline-primary-custom btn-sm">
+            <i class="bi bi-door-open me-1"></i> Room Availability
+        </a>
+        <a asp-controller="Visitors" asp-action="Register" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Gate Pass Check-in
+        </a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Hostel Residents</div>
+                <div class="stat-value">@Model.HostelStudentsCount</div>
+                <div class="stat-subtext text-muted">Currently staying in @(Model.AssignedHostel?.Code ?? "Hostel")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--purple-light); color: var(--purple-accent);">
+                <i class="bi bi-door-open-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Bed Occupancy</div>
+                <div class="stat-value">@Model.OccupancyPercentage%</div>
+                <div class="stat-subtext">@Model.OccupiedBeds / @Model.TotalBeds Beds (@Model.AvailableBeds Available)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--amber-light); color: var(--amber-accent);">
+                <i class="bi bi-calendar2-week-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Pending Leaves</div>
+                <div class="stat-value">@Model.PendingLeaves</div>
+                <div class="stat-subtext text-warning"><i class="bi bi-exclamation-circle"></i> Requires Warden Approval</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--rose-light); color: var(--rose-accent);">
+                <i class="bi bi-tools"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Open Complaints</div>
+                <div class="stat-value">@(Model.PendingComplaints + Model.InProgressComplaints)</div>
+                <div class="stat-subtext">@Model.PendingComplaints New &middot; @Model.InProgressComplaints In Progress</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operational Lists -->
+<div class="row g-3 mb-4">
+    <!-- Pending Leaves -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-calendar-check text-warning me-2"></i> Pending Leave Requests</span>
+                <a asp-controller="Leave" asp-action="Index" class="small text-primary text-decoration-none">All Leaves &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Dates</th>
+                            <th>Destination</th>
+                            <th>Parent Informed</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PendingLeaveRequests.Any())
+                        {
+                            @foreach (var l in Model.PendingLeaveRequests)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@l.Student?.FullName</td>
+                                    <td class="small">@l.StartDate.ToString("dd MMM") - @l.EndDate.ToString("dd MMM")</td>
+                                    <td class="small">@l.Destination</td>
+                                    <td>
+                                        <span class="badge @(l.ParentInformed ? "bg-success" : "bg-danger")">
+                                            @(l.ParentInformed ? "Yes" : "No")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Leave" asp-action="Review" asp-route-id="@l.Id" class="btn btn-sm btn-primary-custom py-0 px-2">
+                                            Review
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No pending leave requests for this hostel.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hostel Complaints -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-tools text-danger me-2"></i> Active Hostel Complaints</span>
+                <a asp-controller="Complaints" asp-action="Index" class="small text-primary text-decoration-none">Manage &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Category</th>
+                            <th>Subject</th>
+                            <th>Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentComplaints.Any())
+                        {
+                            @foreach (var c in Model.RecentComplaints)
+                            {
+                                <tr>
+                                    <td>@c.Student?.FullName</td>
+                                    <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                                    <td class="small fw-semibold text-truncate" style="max-width: 140px;">@c.Subject</td>
+                                    <td>
+                                        <span class="badge @(c.Priority == "Urgent" ? "bg-danger" : c.Priority == "High" ? "bg-warning text-dark" : "bg-info text-dark")">
+                                            @c.Priority
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Complaints" asp-action="Resolve" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary-custom py-0 px-2">
+                                            Update
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No complaints pending action.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visitors Currently Inside & Room Snapshot -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-person-walking text-primary me-2"></i> Visitors Currently in Hostel</span>
+                <a asp-controller="Visitors" asp-action="Index" asp-route-currentlyInside="true" class="small text-primary text-decoration-none">Gate Register &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Visitor Name</th>
+                            <th>Student</th>
+                            <th>Entry Time</th>
+                            <th>Relation</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.CurrentVisitors.Any())
+                        {
+                            @foreach (var v in Model.CurrentVisitors)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@v.VisitorName</td>
+                                    <td>@v.Student?.FullName</td>
+                                    <td class="small">@v.EntryTime.ToString("hh:mm tt")</td>
+                                    <td><span class="badge bg-light text-secondary border">@v.RelationToStudent</span></td>
+                                    <td>
+                                        <form asp-controller="Visitors" asp-action="RecordExit" asp-route-id="@v.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">Check-out</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No visitors currently inside this hostel.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-door-open text-info me-2"></i> Room Inventory Snapshot</span>
+                <a asp-action="RoomAvailability" class="small text-primary text-decoration-none">Full Availability &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Room #</th>
+                            <th>Floor</th>
+                            <th>Type</th>
+                            <th>Beds</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.RoomsList.Take(5))
+                        {
+                            <tr>
+                                <td class="fw-bold">Room @r.RoomNumber</td>
+                                <td>Floor @r.Floor</td>
+                                <td>@r.RoomType</td>
+                                <td>@r.Beds.Count(b => b.Status == "Occupied") / @r.Capacity</td>
+                                <td>
+                                    <span class="badge-status @(r.Status == "Available" ? "badge-available" : r.Status == "Full" ? "badge-full" : "badge-maintenance")">
+                                        @r.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

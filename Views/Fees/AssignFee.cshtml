@@ -1,0 +1,61 @@
+@model HostelEase.ViewModels.AssignFeeViewModel
+@{
+    ViewData["Title"] = "Assign Fee to Student";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-wallet2 text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Assign Fee Obligation</h5>
+                        <small class="text-muted">Issue term fees to a student resident</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="AssignFee" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="StudentId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="StudentId" class="form-select" asp-items="Model.StudentsList">
+                                <option value="">-- Choose Resident Student --</option>
+                            </select>
+                            <span asp-validation-for="StudentId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="FeeStructureId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="FeeStructureId" class="form-select" asp-items="Model.FeeStructuresList">
+                                <option value="">-- Select Rate Structure --</option>
+                            </select>
+                            <span asp-validation-for="FeeStructureId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="DueDate" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="DueDate" type="date" class="form-control" />
+                            <span asp-validation-for="DueDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-check-circle-fill me-1"></i> Issue Fee Obligation
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

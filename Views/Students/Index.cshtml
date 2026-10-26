@@ -1,0 +1,149 @@
+@model HostelEase.ViewModels.StudentListFilterViewModel
+@{
+    ViewData["Title"] = "Student Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Student Residents Directory</h4>
+        <p class="text-muted small mb-0">Manage student profiles, enrollments, room statuses, and records</p>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Warden"))
+    {
+        <a asp-action="Create" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Student
+        </a>
+    }
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search by name, student ID, email..." value="@Model.SearchTerm" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="department" class="form-select form-select-sm">
+                <option value="All">All Departments</option>
+                <option value="Computer Engineering" selected="@(Model.Department == "Computer Engineering")">Computer Engineering</option>
+                <option value="Information Technology" selected="@(Model.Department == "Information Technology")">Information Technology</option>
+                <option value="Mechanical Engineering" selected="@(Model.Department == "Mechanical Engineering")">Mechanical Engineering</option>
+                <option value="Electronics & Communication" selected="@(Model.Department == "Electronics & Communication")">Electronics & Communication</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="academicYear" class="form-select form-select-sm">
+                <option value="All">All Years</option>
+                <option value="1st Year" selected="@(Model.AcademicYear == "1st Year")">1st Year</option>
+                <option value="2nd Year" selected="@(Model.AcademicYear == "2nd Year")">2nd Year</option>
+                <option value="3rd Year" selected="@(Model.AcademicYear == "3rd Year")">3rd Year</option>
+                <option value="4th Year" selected="@(Model.AcademicYear == "4th Year")">4th Year</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Resident Name</th>
+                    <th>Department & Year</th>
+                    <th>Contact</th>
+                    <th>Allocated Room</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Students.Any())
+                {
+                    @foreach (var s in Model.Students)
+                    {
+                        var activeAlloc = s.Allocations.FirstOrDefault();
+                        <tr>
+                            <td class="fw-semibold">@s.StudentId</td>
+                            <td>
+                                <div class="fw-bold text-dark">@s.FullName</div>
+                                <div class="small text-muted">@s.Email</div>
+                            </td>
+                            <td>
+                                <div class="small fw-semibold">@s.Department</div>
+                                <div class="small text-muted">@s.AcademicYear &middot; @s.Gender</div>
+                            </td>
+                            <td class="small">@s.PhoneNumber</td>
+                            <td>
+                                @if (activeAlloc?.Bed?.Room != null)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-door-open-fill me-1"></i> Room @activeAlloc.Bed.Room.RoomNumber [Bed @activeAlloc.Bed.BedNumber]
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                        Unassigned
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge-status @(s.IsActive ? "badge-active" : "badge-inactive")">
+                                    @(s.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-outline-primary-custom py-0 px-2" title="View Profile">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-outline-secondary py-0 px-2" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (activeAlloc == null)
+                                        {
+                                            <a asp-controller="Allocations" asp-action="Allocate" asp-route-studentId="@s.Id" class="btn btn-outline-success py-0 px-2" title="Allocate Bed">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No students matching the criteria.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
+            <span class="small text-muted">Page @Model.PageNumber of @Model.TotalPages (@Model.TotalItems Total Students)</span>
+            <div class="btn-group btn-group-sm">
+                @if (Model.PageNumber > 1)
+                {
+                    <a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-department="@Model.Department" asp-route-academicYear="@Model.AcademicYear" class="btn btn-outline-secondary">Previous</a>
+                }
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-department="@Model.Department" asp-route-academicYear="@Model.AcademicYear" class="btn btn-outline-secondary">Next</a>
+                }
+            </div>
+        </div>
+    }
+</div>

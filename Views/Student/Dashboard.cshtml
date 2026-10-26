@@ -1,0 +1,287 @@
+@model HostelEase.ViewModels.StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<!-- Welcome Banner -->
+<div class="card card-custom p-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%); border-left: 5px solid var(--primary);">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <span class="badge text-white mb-2" style="background-color: #7e22ce;"><i class="bi bi-shield-heart-fill me-1"></i> Girls' Hostel Resident</span>
+            <h4 class="fw-bold text-dark mb-1">Welcome back, @Model.Student.FullName!</h4>
+            <p class="text-secondary small mb-0">
+                Enrollment: <strong>@Model.Student.StudentId</strong> &middot; @Model.Student.Department (@Model.Student.AcademicYear) &middot; <span class="text-purple fw-semibold" style="color: #7e22ce;">Campus Curfew: 8:30 PM</span>
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ApplyLeave" class="btn btn-primary-custom btn-sm" style="background: linear-gradient(135deg, #7e22ce 0%, #4f46e5 100%); border: none;">
+                <i class="bi bi-send-fill me-1"></i> Outstation Gate Pass
+            </a>
+            <a asp-action="SubmitComplaint" class="btn btn-outline-primary-custom btn-sm">
+                <i class="bi bi-tools me-1"></i> File Maintenance Ticket
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Curfew & Safety Alert Banner -->
+<div class="alert alert-light border py-2 px-3 small d-flex align-items-center mb-4 rounded-3 shadow-none" style="background-color: #faf5ff; border-color: #e9d5ff !important;">
+    <i class="bi bi-clock-history text-purple fs-5 me-2" style="color: #7e22ce;"></i>
+    <div>
+        <strong style="color: #7e22ce;">Evening Curfew Reminder:</strong> 
+        Biometric roll-call is active at the main entrance until <strong>8:30 PM</strong>. Outstation weekend passes require parental phone confirmation before approval.
+    </div>
+</div>
+
+<!-- Student Stats / Summary Cards -->
+<div class="row g-3 mb-4">
+    <!-- Room Status Card -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="bi bi-door-open-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">My Room</div>
+                <div class="stat-value fs-5">
+                    @if (Model.CurrentAllocation?.Bed?.Room != null)
+                    {
+                        <span>Room @Model.CurrentAllocation.Bed.Room.RoomNumber</span>
+                    }
+                    else
+                    {
+                        <span class="text-warning fs-6">Unassigned</span>
+                    }
+                </div>
+                <div class="stat-subtext">
+                    @if (Model.CurrentAllocation?.Bed != null)
+                    {
+                        <span>Bed @Model.CurrentAllocation.Bed.BedNumber &middot; @Model.CurrentAllocation.Bed.Room?.Hostel?.Code</span>
+                    }
+                    else
+                    {
+                        <span>Awaiting bed assignment</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outstanding Fees -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--emerald-light); color: var(--emerald-accent);">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Fee Balance</div>
+                <div class="stat-value">₹@Model.BalanceFee.ToString("N0")</div>
+                <div class="stat-subtext @(Model.BalanceFee > 0 ? "text-danger" : "text-success")">
+                    @(Model.BalanceFee > 0 ? "Outstanding balance due" : "All fees cleared")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Complaints -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--amber-light); color: var(--amber-accent);">
+                <i class="bi bi-tools"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">My Complaints</div>
+                <div class="stat-value">@Model.PendingComplaintsCount</div>
+                <div class="stat-subtext text-muted">Active tickets under review</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Leaves -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--purple-light); color: var(--purple-accent);">
+                <i class="bi bi-calendar2-check-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Active Gate Pass</div>
+                <div class="stat-value">@Model.ActiveLeavesCount</div>
+                <div class="stat-subtext text-success">Approved leaves on record</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Activity Panels -->
+<div class="row g-3 mb-4">
+    <!-- Fee Obligations Overview -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-credit-card text-primary me-2"></i> Pending Hostel Fees</span>
+                <a asp-action="MyFees" class="small text-primary text-decoration-none">View All Fees &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Fee Obligation</th>
+                            <th>Due Date</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PendingFees.Any())
+                        {
+                            @foreach (var fee in Model.PendingFees)
+                            {
+                                <tr>
+                                    <td class="fw-semibold small">@fee.FeeTitle</td>
+                                    <td class="small">@fee.DueDate.ToString("dd MMM yyyy")</td>
+                                    <td class="fw-bold text-danger">₹@fee.BalanceAmount.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge @(fee.Status == "Unpaid" ? "bg-danger" : "bg-warning text-dark")">
+                                            @fee.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="4" class="text-center text-success py-3"><i class="bi bi-check-circle me-1"></i> No pending fee dues. You are fully paid up!</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints Status -->
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-tools text-danger me-2"></i> My Recent Complaints</span>
+                <a asp-action="MyComplaints" class="small text-primary text-decoration-none">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentComplaints.Any())
+                        {
+                            @foreach (var c in Model.RecentComplaints)
+                            {
+                                <tr>
+                                    <td class="small fw-semibold text-truncate" style="max-width: 150px;">@c.Subject</td>
+                                    <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                                    <td class="small text-muted">@c.SubmissionDate.ToString("dd MMM")</td>
+                                    <td>
+                                        <span class="badge-status @(c.Status == "Resolved" ? "badge-resolved" : c.Status == "In Progress" ? "badge-in-progress" : "badge-submitted")">
+                                            @c.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">No complaints filed. Everything is running smoothly!</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Requests & Hostel Notices -->
+<div class="row g-3">
+    <!-- Leave History -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-calendar2-range text-warning me-2"></i> Recent Leave Requests</span>
+                <a asp-action="MyLeaveRequests" class="small text-primary text-decoration-none">Manage Leaves &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Dates</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentLeaves.Any())
+                        {
+                            @foreach (var l in Model.RecentLeaves)
+                            {
+                                <tr>
+                                    <td class="small fw-semibold">@l.StartDate.ToString("dd MMM") - @l.EndDate.ToString("dd MMM")</td>
+                                    <td class="small">@l.Destination</td>
+                                    <td>
+                                        <span class="badge @(l.Status == "Approved" ? "bg-success" : l.Status == "Rejected" ? "bg-danger" : "bg-warning text-dark")">
+                                            @l.Status
+                                        </span>
+                                    </td>
+                                    <td class="small text-muted text-truncate" style="max-width: 140px;">
+                                        @(string.IsNullOrEmpty(l.ReviewRemarks) ? "Awaiting review" : l.ReviewRemarks)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">No leave requests recorded.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campus Notices -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-megaphone-fill text-info me-2"></i> Hostel Notice Board</span>
+                <a asp-action="Announcements" class="small text-primary text-decoration-none">All Notices &rarr;</a>
+            </div>
+            <div class="card-body">
+                @if (Model.Announcements.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var ann in Model.Announcements)
+                        {
+                            <div class="p-3 border rounded-3 bg-light">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge @(ann.Priority == "Urgent" ? "bg-danger" : ann.Priority == "Important" ? "bg-warning text-dark" : "bg-primary") small">
+                                        @ann.Priority
+                                    </span>
+                                    <small class="text-muted">@ann.PublishDate.ToString("dd MMM yyyy")</small>
+                                </div>
+                                <h6 class="fw-bold text-dark mb-1">@ann.Title</h6>
+                                <p class="text-secondary small mb-0">@ann.Content</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">No new notices at this time.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

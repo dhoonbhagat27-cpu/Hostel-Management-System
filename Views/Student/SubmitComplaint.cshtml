@@ -1,0 +1,77 @@
+@model HostelEase.ViewModels.ComplaintCreateViewModel
+@{
+    ViewData["Title"] = "File Maintenance Complaint";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-tools text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Submit Maintenance Grievance</h5>
+                        <small class="text-muted">Report electrical, plumbing, furniture, or internet issues</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="SubmitComplaint" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Category" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="Electrical">Electrical (Lights, Sockets, Fan)</option>
+                                <option value="Plumbing">Plumbing (Taps, Drainage, Flush)</option>
+                                <option value="Water Supply">Water Supply / Hot Water</option>
+                                <option value="Internet / Wi-Fi">Internet / Wi-Fi Connectivity</option>
+                                <option value="Furniture">Furniture (Bed, Study Desk, Chair, Cupboard)</option>
+                                <option value="Cleaning">Cleaning & Housekeeping</option>
+                                <option value="Mess / Food">Mess / Food Service</option>
+                                <option value="Other">Other Facility Issue</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Priority" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="Low">Low - Minor inconvenience</option>
+                                <option value="Medium" selected>Medium - Normal repair</option>
+                                <option value="High">High - Significant disruption</option>
+                                <option value="Urgent">Urgent - Hazard or safety concern</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Subject" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Subject" class="form-control" placeholder="Brief summary of the issue (e.g. Bathroom tap leaking constantly)" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Provide complete details, exact location inside the room, and when the issue started..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-send-fill me-1"></i> Submit Complaint Ticket
+                            </button>
+                            <a asp-action="MyComplaints" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

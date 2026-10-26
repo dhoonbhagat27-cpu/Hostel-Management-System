@@ -1,0 +1,160 @@
+@model IEnumerable<HostelEase.Models.StudentFee>
+@{
+    ViewData["Title"] = "Fee Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Fee Management</h4>
+        <p class="text-muted small mb-0">Student fee obligations, collection statuses, and outstanding balances</p>
+    </div>
+    <div class="d-flex gap-2">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="AssignFee" class="btn btn-primary-custom btn-sm">
+                <i class="bi bi-plus-circle me-1"></i> Assign Fee
+            </a>
+            <a asp-action="Structures" class="btn btn-outline-primary-custom btn-sm">
+                <i class="bi bi-tags-fill me-1"></i> Fee Structures
+            </a>
+        }
+    </div>
+</div>
+
+<!-- Financial Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Total Invoiced</div>
+                <div class="stat-value">₹@(((decimal)(ViewBag.TotalDue ?? 0m)).ToString("N2"))</div>
+                <div class="stat-subtext">Cumulative fee obligations</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--emerald-light); color: var(--emerald-accent);">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Collected Revenue</div>
+                <div class="stat-value text-success">₹@(((decimal)(ViewBag.TotalCollected ?? 0m)).ToString("N2"))</div>
+                <div class="stat-subtext text-success">Verified bank & cash receipts</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--rose-light); color: var(--rose-accent);">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Outstanding Due</div>
+                <div class="stat-value text-danger">₹@(((decimal)(ViewBag.TotalOutstanding ?? 0m)).ToString("N2"))</div>
+                <div class="stat-subtext text-danger">Pending collection</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Status Filter -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search by student name, ID, fee title..." value="@ViewBag.Search" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="All">All Statuses</option>
+                <option value="Unpaid" selected="@(ViewBag.CurrentStatus == "Unpaid")">Unpaid</option>
+                <option value="Partially Paid" selected="@(ViewBag.CurrentStatus == "Partially Paid")">Partially Paid</option>
+                <option value="Paid" selected="@(ViewBag.CurrentStatus == "Paid")">Paid</option>
+                <option value="Overdue" selected="@(ViewBag.CurrentStatus == "Overdue")">Overdue</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Resident Student</th>
+                    <th>Fee Title</th>
+                    <th>Due Date</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance Due</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var f in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@f.StudentId" class="fw-bold text-dark text-decoration-none">
+                                    @f.Student?.FullName
+                                </a>
+                                <div class="small text-muted">ID: @f.Student?.StudentId</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@f.FeeTitle</div>
+                                <div class="small text-muted">Created @f.CreatedAt.ToString("dd MMM yyyy")</div>
+                            </td>
+                            <td class="small">@f.DueDate.ToString("dd MMM yyyy")</td>
+                            <td class="fw-bold">₹@f.TotalAmount.ToString("N2")</td>
+                            <td class="fw-semibold text-success">₹@f.PaidAmount.ToString("N2")</td>
+                            <td class="fw-bold @(f.BalanceAmount > 0 ? "text-danger" : "text-muted")">
+                                ₹@f.BalanceAmount.ToString("N2")
+                            </td>
+                            <td>
+                                <span class="badge @(f.Status == "Paid" ? "bg-success" : f.Status == "Partially Paid" ? "bg-info text-dark" : "bg-danger")">
+                                    @f.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    @if (f.BalanceAmount > 0)
+                                    {
+                                        <a asp-action="RecordPayment" asp-route-id="@f.Id" class="btn btn-primary-custom py-0 px-2" title="Record Payment">
+                                            <i class="bi bi-cash me-1"></i> Pay
+                                        </a>
+                                    }
+                                    @if (f.Payments.Any())
+                                    {
+                                        var latestPayment = f.Payments.OrderByDescending(p => p.PaymentDate).First();
+                                        <a asp-action="Receipt" asp-route-id="@latestPayment.Id" class="btn btn-outline-secondary py-0 px-2" title="Print Receipt">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No fee records found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

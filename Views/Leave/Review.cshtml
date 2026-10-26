@@ -1,0 +1,81 @@
+@model HostelEase.ViewModels.LeaveReviewViewModel
+@{
+    ViewData["Title"] = $"Review Leave Request #{Model.Id}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar2-check-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Review Leave Request & Gate Pass</h5>
+                        <small class="text-muted">Application #@Model.Id &middot; Departure @Model.StartDate.ToString("dd MMM yyyy")</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Request Summary -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="row g-2 small">
+                        <div class="col-sm-6"><span class="text-muted">Student Name:</span> <strong>@Model.StudentName (@Model.StudentIdString)</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Accommodation:</span> <strong>@Model.RoomDetails</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Travel Dates:</span> <strong class="text-primary">@Model.StartDate.ToString("dd MMM yyyy") to @Model.EndDate.ToString("dd MMM yyyy")</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Duration:</span> <strong>@((Model.EndDate.Date - Model.StartDate.Date).Days + 1) Days</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Destination:</span> <strong>@Model.Destination</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Emergency Phone:</span> <strong class="font-monospace">@Model.EmergencyContact</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Parent Informed:</span> <span class="badge @(Model.ParentInformed ? "bg-success" : "bg-danger")">@(Model.ParentInformed ? "Confirmed by Student" : "No")</span></div>
+                        <div class="col-12 mt-2">
+                            <span class="text-muted">Stated Reason:</span>
+                            <p class="mb-0 text-secondary">@Model.Reason</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form asp-action="Review" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="StudentName" />
+                    <input type="hidden" asp-for="StudentIdString" />
+                    <input type="hidden" asp-for="RoomDetails" />
+                    <input type="hidden" asp-for="StartDate" />
+                    <input type="hidden" asp-for="EndDate" />
+                    <input type="hidden" asp-for="Reason" />
+                    <input type="hidden" asp-for="Destination" />
+                    <input type="hidden" asp-for="EmergencyContact" />
+                    <input type="hidden" asp-for="ParentInformed" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Approved">Approve Leave & Issue Gate Pass</option>
+                                <option value="Rejected">Reject Leave Application</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="ReviewRemarks" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="ReviewRemarks" class="form-control" rows="3" placeholder="Warden remarks, parent verification confirmation, travel conditions..."></textarea>
+                            <span asp-validation-for="ReviewRemarks" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-check2-circle me-1"></i> Record Decision & Notify Student
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

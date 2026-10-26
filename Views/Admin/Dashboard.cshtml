@@ -1,0 +1,422 @@
+@model HostelEase.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Administrative Overview</h4>
+        <p class="text-muted small mb-0">Live real-time analytics from SQL Server database</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Allocations" asp-action="Allocate" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Allocate Bed
+        </a>
+        <a asp-controller="Reports" asp-action="Index" class="btn btn-outline-primary-custom btn-sm">
+            <i class="bi bi-download me-1"></i> Reports & Export
+        </a>
+    </div>
+</div>
+
+<!-- Primary Statistics Grid -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Total Residents</div>
+                <div class="stat-value">@Model.TotalStudents</div>
+                <div class="stat-subtext text-success"><i class="bi bi-check-circle-fill"></i> @Model.ActiveStudents Active Enrolled</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--purple-light); color: var(--purple-accent);">
+                <i class="bi bi-buildings-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Bed Occupancy</div>
+                <div class="stat-value">@Model.OccupancyPercentage%</div>
+                <div class="stat-subtext">@Model.OccupiedBeds / @Model.TotalBeds Beds (@Model.AvailableBeds Free)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--emerald-light); color: var(--emerald-accent);">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Fee Collection</div>
+                <div class="stat-value">₹@Model.TotalFeeCollection.ToString("N0")</div>
+                <div class="stat-subtext text-danger"><i class="bi bi-clock-history"></i> ₹@Model.OutstandingFees.ToString("N0") Outstanding</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--amber-light); color: var(--amber-accent);">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Gate & Operations</div>
+                <div class="stat-value">@Model.VisitorsInside <span class="fs-6 fw-normal text-muted">Inside</span></div>
+                <div class="stat-subtext">@Model.PendingComplaints Complaints &middot; @Model.PendingLeaveRequests Leaves</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-graph-up text-primary me-2"></i> Monthly Fee Revenue Trend</span>
+                <span class="badge bg-light text-muted border">Last 6 Months</span>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyFeeChart" height="110"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-pie-chart text-purple me-2"></i> Complaints Resolution</span>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-center">
+                <canvas id="complaintsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Charts & Hostel Distribution -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-bar-chart text-info me-2"></i> Hostel-Wise Bed Occupancy</span>
+                <span class="badge bg-light text-muted border">Capacity vs Occupied</span>
+            </div>
+            <div class="card-body">
+                <canvas id="hostelOccupancyChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-calendar2-check text-success me-2"></i> Leave Request Approvals</span>
+            </div>
+            <div class="card-body">
+                <canvas id="leaveChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables: Recent Activity -->
+<div class="row g-3">
+    <!-- Recent Payments -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-receipt text-success me-2"></i> Recent Payment Transactions</span>
+                <a asp-controller="Fees" asp-action="Payments" class="small text-primary text-decoration-none">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Receipt</th>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Mode</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentPayments.Any())
+                        {
+                            @foreach (var p in Model.RecentPayments)
+                            {
+                                <tr>
+                                    <td><span class="fw-semibold text-primary">@p.ReceiptNumber</span></td>
+                                    <td>@p.StudentFee?.Student?.FullName</td>
+                                    <td class="fw-bold text-success">₹@p.Amount.ToString("N2")</td>
+                                    <td><span class="badge bg-light text-dark border">@p.PaymentMethod</span></td>
+                                    <td>@p.PaymentDate.ToString("dd MMM")</td>
+                                    <td>
+                                        <a asp-controller="Fees" asp-action="Receipt" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Print Receipt">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-3">No recent payments recorded.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Leave Approvals -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-clock-history text-warning me-2"></i> Pending Leave Approvals</span>
+                <a asp-controller="Leave" asp-action="Index" class="small text-primary text-decoration-none">View All &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Dates</th>
+                            <th>Destination</th>
+                            <th>Reason</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PendingApprovals.Any())
+                        {
+                            @foreach (var l in Model.PendingApprovals)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@l.Student?.FullName</td>
+                                    <td class="small">@l.StartDate.ToString("dd MMM") - @l.EndDate.ToString("dd MMM")</td>
+                                    <td class="small">@l.Destination</td>
+                                    <td class="small text-truncate" style="max-width: 140px;">@l.Reason</td>
+                                    <td>
+                                        <a asp-controller="Leave" asp-action="Review" asp-route-id="@l.Id" class="btn btn-sm btn-primary-custom py-0 px-2">
+                                            Review
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No pending leaves awaiting review.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-tools text-danger me-2"></i> Recent Complaints</span>
+                <a asp-controller="Complaints" asp-action="Index" class="small text-primary text-decoration-none">Manage Complaints &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Category</th>
+                            <th>Subject</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentComplaints.Any())
+                        {
+                            @foreach (var c in Model.RecentComplaints)
+                            {
+                                <tr>
+                                    <td>@c.Student?.FullName</td>
+                                    <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                                    <td class="small fw-semibold">@c.Subject</td>
+                                    <td>
+                                        <span class="badge @(c.Priority == "Urgent" ? "bg-danger" : c.Priority == "High" ? "bg-warning text-dark" : "bg-info text-dark")">
+                                            @c.Priority
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge-status @(c.Status == "Resolved" ? "badge-resolved" : c.Status == "In Progress" ? "badge-in-progress" : "badge-submitted")">
+                                            @c.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No complaints filed.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Visitors Inside -->
+    <div class="col-lg-6">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-person-walking text-primary me-2"></i> Visitors Currently Inside</span>
+                <a asp-controller="Visitors" asp-action="Index" asp-route-currentlyInside="true" class="small text-primary text-decoration-none">Gate Pass &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Visitor</th>
+                            <th>Visiting Student</th>
+                            <th>Entry Time</th>
+                            <th>Relation</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var insideVisitors = Model.RecentVisitors.Where(v => v.ExitTime == null).ToList();
+                        }
+                        @if (insideVisitors.Any())
+                        {
+                            @foreach (var v in insideVisitors)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@v.VisitorName</td>
+                                    <td>@v.Student?.FullName</td>
+                                    <td class="small">@v.EntryTime.ToString("hh:mm tt")</td>
+                                    <td><span class="badge bg-light text-secondary border">@v.RelationToStudent</span></td>
+                                    <td>
+                                        <form asp-controller="Visitors" asp-action="RecordExit" asp-route-id="@v.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">Exit</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-3">No visitors currently inside campus.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 1. Monthly Fee Collection Bar/Line Chart
+        const feeCtx = document.getElementById('monthlyFeeChart').getContext('2d');
+        new Chart(feeCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyFeeLabels)),
+                datasets: [{
+                    label: 'Fee Collection (₹)',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyFeeValues)),
+                    backgroundColor: 'rgba(79, 70, 229, 0.75)',
+                    borderColor: '#4f46e5',
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return '₹' + value.toLocaleString(); }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Complaints Status Doughnut Chart
+        const compCtx = document.getElementById('complaintsChart').getContext('2d');
+        new Chart(compCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Submitted', 'In Progress', 'Resolved / Closed'],
+                datasets: [{
+                    data: [@Model.ComplaintSubmittedCount, @Model.ComplaintInProgressCount, @Model.ComplaintResolvedCount],
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 3. Hostel Occupancy Grouped Bar Chart
+        const hostelCtx = document.getElementById('hostelOccupancyChart').getContext('2d');
+        new Chart(hostelCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HostelOccupancyLabels)),
+                datasets: [
+                    {
+                        label: 'Occupied Beds',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HostelOccupiedValues)),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Total Capacity',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HostelCapacityValues)),
+                        backgroundColor: '#e2e8f0',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 4. Leave Status Pie Chart
+        const leaveCtx = document.getElementById('leaveChart').getContext('2d');
+        new Chart(leaveCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    data: [@Model.LeavePendingCount, @Model.LeaveApprovedCount, @Model.LeaveRejectedCount],
+                    backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}

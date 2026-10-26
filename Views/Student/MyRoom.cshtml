@@ -1,0 +1,128 @@
+@{
+    ViewData["Title"] = "My Room & Allocation";
+    bool hasRoom = ViewBag.HasRoom ?? false;
+    var alloc = ViewBag.Allocation as HostelEase.Models.RoomAllocation;
+    var room = ViewBag.Room as HostelEase.Models.Room;
+    var hostel = ViewBag.Hostel as HostelEase.Models.Hostel;
+    var bed = ViewBag.Bed as HostelEase.Models.Bed;
+    var roommates = ViewBag.Roommates as List<HostelEase.Models.RoomAllocation> ?? new List<HostelEase.Models.RoomAllocation>();
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        @if (hasRoom && room != null && hostel != null && bed != null)
+        {
+            <div class="card card-custom mb-4">
+                <div class="card-header-custom">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-door-open-fill text-primary fs-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">Room @room.RoomNumber &middot; Bed @bed.BedNumber</h5>
+                            <small class="text-muted">@hostel.Name (@hostel.Code)</small>
+                        </div>
+                    </div>
+                    <span class="badge bg-success">Active Resident</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Hostel Block</label>
+                            <div class="fw-bold fs-6">@hostel.Name</div>
+                            <div class="small text-muted">@hostel.HostelType Residence</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Floor & Room Type</label>
+                            <div class="fw-bold fs-6">Floor @room.Floor</div>
+                            <div class="small text-muted">@room.RoomType Sharing (@room.Capacity Beds Total)</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Allocated Bed ID</label>
+                            <div class="fw-bold fs-6 text-primary">Bed @bed.BedNumber</div>
+                            <div class="small text-muted">Allocated on @alloc?.AllocationDate.ToString("dd MMM yyyy")</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Monthly Charge</label>
+                            <div class="fw-bold fs-6 text-success">₹@room.MonthlyFee.ToString("N2") / month</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Warden In Charge</label>
+                            <div class="fw-bold fs-6">@(hostel.AssignedWarden?.FullName ?? "Hostel Warden")</div>
+                            <div class="small text-muted">@(hostel.AssignedWarden?.PhoneNumber ?? hostel.ContactNumber)</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Expected Vacating Date</label>
+                            <div class="fw-bold fs-6">
+                                @(alloc?.ExpectedVacatingDate.HasValue == true ? alloc.ExpectedVacatingDate.Value.ToString("dd MMM yyyy") : "Academic Year End")
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Roommates Section -->
+                    <div class="border-top pt-4">
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-people-fill text-primary me-2"></i> Roommates Sharing Room @room.RoomNumber</h6>
+                        @if (roommates.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var rm in roommates)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-3">
+                                            <div class="avatar-circle">
+                                                @(rm.Student?.FullName.Length > 0 ? rm.Student.FullName[0].ToString() : "S")
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">@rm.Student?.FullName</div>
+                                                <div class="small text-muted">
+                                                    Bed @rm.Bed?.BedNumber &middot; @rm.Student?.Department (@rm.Student?.AcademicYear)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">No other roommates currently allocated to this room.</p>
+                        }
+                    </div>
+
+                    <!-- Facilities -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-stars text-warning me-2"></i> Room & Hostel Amenities</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-secondary border p-2"><i class="bi bi-wifi me-1 text-primary"></i> 24/7 Campus Wi-Fi</span>
+                            <span class="badge bg-light text-secondary border p-2"><i class="bi bi-lightbulb me-1 text-warning"></i> Study Desk & Lamp</span>
+                            <span class="badge bg-light text-secondary border p-2"><i class="bi bi-droplet-half me-1 text-info"></i> RO Purified Drinking Water</span>
+                            <span class="badge bg-light text-secondary border p-2"><i class="bi bi-shield-check me-1 text-success"></i> 24/7 Guarded Entry</span>
+                            <span class="badge bg-light text-secondary border p-2"><i class="bi bi-cup-hot me-1 text-danger"></i> Central Mess Dining</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card card-custom p-5 text-center">
+                <div class="p-4 bg-warning-subtle text-warning rounded-circle d-inline-block mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-door-closed fs-1"></i>
+                </div>
+                <h4 class="fw-bold mb-2">No Bed Allocated Yet</h4>
+                <p class="text-secondary small max-w-md mx-auto mb-4">
+                    Your registration has been confirmed, but a hostel room and bed have not been assigned to your profile yet. The warden or administrator will allocate your room shortly.
+                </p>
+                <div>
+                    <a asp-action="Dashboard" class="btn btn-outline-primary-custom">
+                        <i class="bi bi-arrow-left me-1"></i> Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

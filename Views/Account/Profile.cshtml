@@ -1,0 +1,111 @@
+@model HostelEase.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle fs-4 text-primary"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">User Profile</h5>
+                        <small class="text-muted">Account and hostel enrollment details</small>
+                    </div>
+                </div>
+                <span class="badge @(Model.Role == "Admin" ? "bg-danger" : Model.Role == "Warden" ? "bg-warning text-dark" : "bg-success")">
+                    @Model.Role Role
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Full Name</label>
+                        <div class="fw-bold fs-6 text-dark">@Model.FullName</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Email Address</label>
+                        <div class="fw-bold fs-6 text-dark">@Model.Email</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Phone Number</label>
+                        <div class="fw-bold fs-6 text-dark">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Account Security</label>
+                        <div>
+                            <a asp-action="ChangePassword" class="btn btn-sm btn-outline-primary-custom">
+                                <i class="bi bi-key me-1"></i> Change Password
+                            </a>
+                        </div>
+                    </div>
+
+                    @if (Model.Role == "Student")
+                    {
+                        <div class="col-12"><hr class="my-2"/></div>
+                        <div class="col-12"><h6 class="fw-bold text-primary mb-2">Hostel & Academic Profile</h6></div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Student ID / Enrollment</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.StudentId</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Department</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.Department</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Academic Year</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.AcademicYear</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold text-uppercase">Current Room Allocation</label>
+                            <div class="fw-bold fs-6 text-dark">
+                                @if (!string.IsNullOrEmpty(Model.AllocatedRoom))
+                                {
+                                    <span class="badge bg-success-subtle text-success fs-6 border border-success-subtle">
+                                        <i class="bi bi-door-open-fill me-1"></i> @Model.AllocatedRoom &middot; @Model.AllocatedBed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning fs-6">No bed currently allocated</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold text-uppercase">Guardian Contact</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.GuardianName (@Model.GuardianContact)</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small fw-semibold text-uppercase">Permanent Address</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.Address</div>
+                        </div>
+                    }
+                    else if (Model.Role == "Warden" || Model.Role == "Admin")
+                    {
+                        <div class="col-12"><hr class="my-2"/></div>
+                        <div class="col-12"><h6 class="fw-bold text-primary mb-2">Staff & Administrative Profile</h6></div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Staff ID</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.StaffId</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Designation</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.Designation</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-semibold text-uppercase">Assigned Hostel</label>
+                            <div class="fw-bold fs-6 text-dark">@Model.AssignedHostelName</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

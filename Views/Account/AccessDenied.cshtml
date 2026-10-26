@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5 text-center">
+    <div class="py-5">
+        <div class="display-3 text-danger mb-3">
+            <i class="bi bi-shield-x"></i>
+        </div>
+        <h3 class="fw-bold mb-2">Access Denied</h3>
+        <p class="text-secondary mb-4">You do not possess the required permissions to view this administrative resource.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary-custom px-4">
+            <i class="bi bi-arrow-left me-1"></i> Return to Dashboard / Home
+        </a>
+    </div>
+</div>

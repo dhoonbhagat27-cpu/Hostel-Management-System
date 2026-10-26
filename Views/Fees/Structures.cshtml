@@ -1,0 +1,68 @@
+@model IEnumerable<HostelEase.Models.FeeStructure>
+@{
+    ViewData["Title"] = "Fee Structures";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Fee Structure Rates</h4>
+        <p class="text-muted small mb-0">Pre-configured charges for rent, dining mess, maintenance, and security deposit</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="CreateStructure" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> New Fee Structure
+        </a>
+    }
+</div>
+
+<div class="row g-4">
+    @foreach (var fs in Model)
+    {
+        <div class="col-md-6">
+            <div class="card card-custom h-100">
+                <div class="card-header-custom">
+                    <div>
+                        <h5 class="fw-bold mb-0">@fs.Title</h5>
+                        <small class="text-muted">@fs.AcademicYear &middot; @fs.Term Term</small>
+                    </div>
+                    <span class="badge @(fs.IsActive ? "bg-success" : "bg-secondary")">
+                        @(fs.IsActive ? "Active" : "Archived")
+                    </span>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-3 small">
+                        <li class="py-2 border-bottom d-flex justify-content-between">
+                            <span class="text-secondary"><i class="bi bi-door-open me-2 text-primary"></i> Hostel Rent:</span>
+                            <span class="fw-bold">₹@fs.HostelRent.ToString("N2")</span>
+                        </li>
+                        <li class="py-2 border-bottom d-flex justify-content-between">
+                            <span class="text-secondary"><i class="bi bi-cup-hot me-2 text-warning"></i> Mess & Food Fee:</span>
+                            <span class="fw-bold">₹@fs.MessFee.ToString("N2")</span>
+                        </li>
+                        <li class="py-2 border-bottom d-flex justify-content-between">
+                            <span class="text-secondary"><i class="bi bi-wrench me-2 text-info"></i> Maintenance & Utilities:</span>
+                            <span class="fw-bold">₹@fs.MaintenanceFee.ToString("N2")</span>
+                        </li>
+                        <li class="py-2 border-bottom d-flex justify-content-between">
+                            <span class="text-secondary"><i class="bi bi-shield-check me-2 text-success"></i> Refundable Security Deposit:</span>
+                            <span class="fw-bold">₹@fs.SecurityDeposit.ToString("N2")</span>
+                        </li>
+                        <li class="pt-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-6 text-dark">Total Obligation:</span>
+                            <span class="fw-bold fs-5 text-primary">₹@fs.TotalAmount.ToString("N2")</span>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 small text-muted">
+                        <span>Applies to: <strong>@fs.RoomType (@fs.HostelType Hostels)</strong></span>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="AssignFee" class="btn btn-sm btn-outline-primary-custom py-0 px-2">Assign to Student</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

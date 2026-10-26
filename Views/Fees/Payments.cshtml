@@ -1,0 +1,94 @@
+@model IEnumerable<HostelEase.Models.FeePayment>
+@{
+    ViewData["Title"] = "Payment Transactions";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Fee Payment Transactions</h4>
+        <p class="text-muted small mb-0">Audited financial transaction records with receipt generation</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Reports" asp-action="ExportCsv" asp-route-type="fees" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Payments CSV
+        </a>
+        <a asp-action="Index" class="btn btn-outline-primary-custom btn-sm">
+            <i class="bi bi-wallet2 me-1"></i> Fee Obligations
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search by receipt #, reference, student name or ID..." value="@ViewBag.Search" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="method" class="form-select form-select-sm">
+                <option value="All">All Payment Modes</option>
+                <option value="UPI" selected="@(ViewBag.Method == "UPI")">UPI</option>
+                <option value="Bank Transfer" selected="@(ViewBag.Method == "Bank Transfer")">Bank Transfer</option>
+                <option value="Cash" selected="@(ViewBag.Method == "Cash")">Cash</option>
+                <option value="Demand Draft" selected="@(ViewBag.Method == "Demand Draft")">Demand Draft</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Payments" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Receipt No.</th>
+                    <th>Resident Student</th>
+                    <th>Fee Title</th>
+                    <th>Amount Paid</th>
+                    <th>Method</th>
+                    <th>Reference / UTR</th>
+                    <th>Date</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold font-monospace text-primary">@p.ReceiptNumber</td>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@p.StudentFee?.StudentId" class="fw-semibold text-dark text-decoration-none">
+                                    @p.StudentFee?.Student?.FullName
+                                </a>
+                                <div class="small text-muted">ID: @p.StudentFee?.Student?.StudentId</div>
+                            </td>
+                            <td class="small">@p.StudentFee?.FeeTitle</td>
+                            <td class="fw-bold text-success">₹@p.Amount.ToString("N2")</td>
+                            <td><span class="badge bg-light text-dark border">@p.PaymentMethod</span></td>
+                            <td class="small font-monospace text-muted">@p.TransactionReference</td>
+                            <td class="small">@p.PaymentDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <a asp-action="Receipt" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Print Receipt">
+                                    <i class="bi bi-printer"></i> Receipt
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No payment transactions found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

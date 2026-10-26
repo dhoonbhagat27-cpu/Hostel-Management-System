@@ -1,0 +1,89 @@
+@model HostelEase.ViewModels.VisitorRegisterViewModel
+@{
+    ViewData["Title"] = "Register Campus Visitor";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-badge-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Visitor Gate Pass Check-in</h5>
+                        <small class="text-muted">Register guest entry and issue digital visitor record</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-light border small text-muted mb-3 py-2 px-3 rounded-3" style="background-color: #faf5ff; border-color: #e9d5ff !important;">
+                    <i class="bi bi-shield-lock-fill text-purple me-2" style="color: #7e22ce;"></i>
+                    <strong style="color: #7e22ce;">Girls' Hostel Gate Protocol:</strong> 
+                    Only approved parents and registered Local Guardians (LGs) with verified government photo ID are permitted in the Ground Floor Visitors' Lounge between 4:00 PM and 7:00 PM.
+                </div>
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="StudentId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="StudentId" class="form-select" asp-items="Model.StudentsList">
+                                <option value="">-- Choose Resident Being Visited --</option>
+                            </select>
+                            <span asp-validation-for="StudentId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="VisitorName" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="VisitorName" class="form-control" placeholder="Visitor Full Name" />
+                            <span asp-validation-for="VisitorName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ContactNumber" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="ContactNumber" class="form-control" placeholder="+91 98765 00000" />
+                            <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RelationToStudent" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="RelationToStudent" class="form-select">
+                                <option value="Mother">Mother</option>
+                                <option value="Father">Father</option>
+                                <option value="Local Guardian (LG - Verified)">Local Guardian (LG - Verified)</option>
+                                <option value="Sister">Sister</option>
+                                <option value="Brother">Brother</option>
+                                <option value="Relative">Relative</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PurposeOfVisit" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="PurposeOfVisit" class="form-control" placeholder="e.g. Delivery, Meeting, Medical" />
+                            <span asp-validation-for="PurposeOfVisit" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Remarks" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Remarks" class="form-control" rows="2" placeholder="ID proof presented (Aadhaar / Driving License / Govt ID), vehicle number..."></textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Check-in Visitor
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

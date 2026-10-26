@@ -1,0 +1,25 @@
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    (function ($) {
+        if (typeof $ !== 'undefined' && $.validator && $.validator.unobtrusive) {
+            // Custom Unobtrusive Adapter for [MustBeTrue] (data-val-mustbetrue)
+            $.validator.addMethod("mustbetrue", function (value, element) {
+                return element.checked;
+            });
+            $.validator.unobtrusive.adapters.addBool("mustbetrue");
+
+            // Defensive fallback: If range validation is ever attached to a checkbox element,
+            // ensure it validates checkbox checked state instead of comparing string characters.
+            if ($.validator.methods.range) {
+                var originalRange = $.validator.methods.range;
+                $.validator.methods.range = function (value, element, param) {
+                    if (element.type === "checkbox") {
+                        return element.checked;
+                    }
+                    return originalRange.call(this, value, element, param);
+                };
+            }
+        }
+    })(jQuery);
+</script>

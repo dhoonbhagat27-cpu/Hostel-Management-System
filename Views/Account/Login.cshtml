@@ -1,0 +1,85 @@
+@model HostelEase.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In - Girls' Hostel Portal";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border rounded-4 shadow-sm p-4 bg-white">
+                <div class="text-center mb-4">
+                    <div class="p-3 bg-purple-subtle text-purple rounded-circle d-inline-block mb-2" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; background-color: #f3e8ff; color: #7e22ce;">
+                        <i class="bi bi-shield-heart-fill fs-3"></i>
+                    </div>
+                    <span class="d-block badge bg-purple-subtle text-purple border px-3 py-1 rounded-pill mb-2 mx-auto" style="width: fit-content; background-color: #f3e8ff; color: #7e22ce; border-color: #d8b4fe !important;">
+                        <i class="bi bi-gender-female me-1"></i> Women's Residential Campus
+                    </span>
+                    <h4 class="fw-bold text-dark mb-1">HostelEase Portal</h4>
+                    <p class="text-muted small">Sign in to your resident portal or supervisory desk</p>
+                </div>
+
+                <form asp-action="Login" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold text-secondary"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" id="loginEmail" class="form-control border-start-0" placeholder="name@hostelease.com" autofocus />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label asp-for="Password" class="form-label small fw-semibold text-secondary mb-0"></label>
+                            <a asp-action="ForgotPassword" class="text-purple small text-decoration-none" style="color: #7e22ce;">Forgot password?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" id="loginPassword" type="password" class="form-control border-start-0 border-end-0" placeholder="Enter password" />
+                            <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePasswordBtn">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label small text-secondary"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 mb-3" style="background: linear-gradient(135deg, #7e22ce 0%, #4f46e5 100%); border: none;">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Account
+                    </button>
+                </form>
+
+                
+                <div class="text-center border-top pt-3">
+                    <span class="text-muted small">New female student seeking admission?</span>
+                    <a asp-action="Register" class="text-purple small fw-bold text-decoration-none ms-1" style="color: #7e22ce;">Register as Resident</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('togglePasswordBtn').addEventListener('click', function () {
+            const pwdInput = document.getElementById('loginPassword');
+            const icon = document.getElementById('toggleIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    </script>
+}

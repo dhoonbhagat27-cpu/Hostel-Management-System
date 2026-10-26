@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Reports & Analytics";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Reports & Analytics Engine</h4>
+        <p class="text-muted small mb-0">Generate institutional audit reports and export tabular CSV datasets</p>
+    </div>
+</div>
+
+<!-- Quick Export Buttons Bar -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-door-open-fill text-primary fs-4"></i>
+                    <h6 class="fw-bold mb-0">Room & Bed Occupancy</h6>
+                </div>
+                <p class="text-muted small mb-3">Room capacities, occupied beds, vacancy rates across all hostel blocks.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" asp-route-type="Occupancy" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Report</a>
+                <a asp-action="ExportCsv" asp-route-type="occupancy" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-cash-stack text-success fs-4"></i>
+                    <h6 class="fw-bold mb-0">Fee Revenue & Receipts</h6>
+                </div>
+                <p class="text-muted small mb-3">Cumulative payment transactions, receipts, payment modes, and UTR numbers.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" asp-route-type="Fees" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Report</a>
+                <a asp-action="ExportCsv" asp-route-type="fees" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-mortarboard-fill text-info fs-4"></i>
+                    <h6 class="fw-bold mb-0">Student Residents Master</h6>
+                </div>
+                <p class="text-muted small mb-3">Complete directory of students, departments, enrollment numbers, and contact info.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Students" asp-action="Index" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Directory</a>
+                <a asp-action="ExportCsv" asp-route-type="students" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-tools text-danger fs-4"></i>
+                    <h6 class="fw-bold mb-0">Maintenance & Grievances</h6>
+                </div>
+                <p class="text-muted small mb-3">Complaints categorized by electrical, plumbing, Wi-Fi, resolution turnaround times.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" asp-route-type="Complaints" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Report</a>
+                <a asp-action="ExportCsv" asp-route-type="complaints" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-calendar2-range text-warning fs-4"></i>
+                    <h6 class="fw-bold mb-0">Student Leave & Gate Passes</h6>
+                </div>
+                <p class="text-muted small mb-3">Outstation absences, destinations, emergency numbers, and authorization history.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" asp-route-type="Leaves" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Report</a>
+                <a asp-action="ExportCsv" asp-route-type="leaves" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="p-3 bg-white border rounded-3 shadow-sm h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-person-walking text-primary fs-4"></i>
+                    <h6 class="fw-bold mb-0">Gate Security & Visitors</h6>
+                </div>
+                <p class="text-muted small mb-3">Visitor entries, check-out timestamps, visited students, and purpose logs.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" asp-route-type="Visitors" class="btn btn-sm btn-outline-primary-custom flex-grow-1">View Report</a>
+                <a asp-action="ExportCsv" asp-route-type="visitors" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</a>
+            </div>
+        </div>
+    </div>
+</div>

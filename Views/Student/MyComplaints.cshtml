@@ -1,0 +1,75 @@
+@model IEnumerable<HostelEase.Models.Complaint>
+@{
+    ViewData["Title"] = "My Complaints";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Maintenance Complaints</h4>
+        <p class="text-muted small mb-0">Track room and facility repairs submitted to the hostel warden</p>
+    </div>
+    <a asp-action="SubmitComplaint" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-plus-circle me-1"></i> File New Complaint
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Subject & Description</th>
+                    <th>Submitted On</th>
+                    <th>Status</th>
+                    <th>Warden Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                            <td>
+                                <span class="badge @(c.Priority == "Urgent" ? "bg-danger" : c.Priority == "High" ? "bg-warning text-dark" : "bg-info text-dark")">
+                                    @c.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@c.Subject</div>
+                                <div class="small text-secondary" style="max-width: 300px;">@c.Description</div>
+                            </td>
+                            <td class="small text-muted">@c.SubmissionDate.ToString("dd MMM yyyy, hh:mm tt")</td>
+                            <td>
+                                <span class="badge-status @(c.Status == "Resolved" ? "badge-resolved" : c.Status == "In Progress" ? "badge-in-progress" : "badge-submitted")">
+                                    @c.Status
+                                </span>
+                            </td>
+                            <td class="small text-secondary" style="max-width: 250px;">
+                                @if (!string.IsNullOrEmpty(c.ResolutionRemarks))
+                                {
+                                    <div class="fst-italic text-dark">@c.ResolutionRemarks</div>
+                                    @if (c.ResolvedDate.HasValue)
+                                    {
+                                        <div class="text-muted" style="font-size: 0.75rem;">Resolved on @c.ResolvedDate.Value.ToString("dd MMM yyyy")</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Pending review by warden</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">You have not submitted any complaints.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

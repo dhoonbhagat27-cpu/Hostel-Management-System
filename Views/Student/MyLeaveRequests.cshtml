@@ -1,0 +1,74 @@
+@model IEnumerable<HostelEase.Models.LeaveRequest>
+@{
+    ViewData["Title"] = "My Leave Requests";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Leave & Outstation Pass</h4>
+        <p class="text-muted small mb-0">Record of leave applications, travel dates, and warden authorizations</p>
+    </div>
+    <a asp-action="ApplyLeave" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-send-fill me-1"></i> Apply for Leave
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Departure Date</th>
+                    <th>Return Date</th>
+                    <th>Destination</th>
+                    <th>Reason</th>
+                    <th>Emergency Contact</th>
+                    <th>Status</th>
+                    <th>Warden Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var l in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold text-dark">@l.StartDate.ToString("dd MMM yyyy")</td>
+                            <td class="fw-semibold text-dark">@l.EndDate.ToString("dd MMM yyyy")</td>
+                            <td>@l.Destination</td>
+                            <td class="small text-secondary" style="max-width: 200px;">@l.Reason</td>
+                            <td class="small font-monospace">@l.EmergencyContact</td>
+                            <td>
+                                <span class="badge @(l.Status == "Approved" ? "bg-success" : l.Status == "Rejected" ? "bg-danger" : l.Status == "Cancelled" ? "bg-secondary" : "bg-warning text-dark")">
+                                    @l.Status
+                                </span>
+                            </td>
+                            <td class="small text-secondary" style="max-width: 180px;">
+                                @(string.IsNullOrEmpty(l.ReviewRemarks) ? "Awaiting review" : l.ReviewRemarks)
+                            </td>
+                            <td>
+                                @if (l.Status == "Pending")
+                                {
+                                    <form asp-action="CancelLeave" asp-route-id="@l.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Cancel this pending leave application?');">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">&ndash;</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No leave requests found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

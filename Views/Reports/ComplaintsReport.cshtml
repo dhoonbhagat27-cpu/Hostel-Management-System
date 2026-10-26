@@ -1,0 +1,60 @@
+@model IEnumerable<HostelEase.Models.Complaint>
+@{
+    ViewData["Title"] = "Complaints Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Grievances & Maintenance Audit Report</h4>
+        <p class="text-muted small mb-0">Record of reported facility issues and resolution timelines</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportCsv" asp-route-type="complaints" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-printer me-1"></i> Print
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">All Reports</a>
+    </div>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Resident</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Subject</th>
+                    <th>Submitted Date</th>
+                    <th>Resolved Date</th>
+                    <th>Assigned Staff</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td class="font-monospace fw-bold">#@c.Id</td>
+                        <td>@c.Student?.FullName (@c.Student?.StudentId)</td>
+                        <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                        <td><span class="badge @(c.Priority == "Urgent" ? "bg-danger" : c.Priority == "High" ? "bg-warning text-dark" : "bg-info text-dark")">@c.Priority</span></td>
+                        <td class="small fw-semibold">@c.Subject</td>
+                        <td class="small text-muted">@c.SubmissionDate.ToString("dd MMM yyyy")</td>
+                        <td class="small text-muted">@(c.ResolvedDate.HasValue ? c.ResolvedDate.Value.ToString("dd MMM yyyy") : "Pending")</td>
+                        <td class="small">@(c.AssignedStaff?.FullName ?? "Unassigned")</td>
+                        <td>
+                            <span class="badge-status @(c.Status == "Resolved" ? "badge-resolved" : c.Status == "In Progress" ? "badge-in-progress" : "badge-submitted")">
+                                @c.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

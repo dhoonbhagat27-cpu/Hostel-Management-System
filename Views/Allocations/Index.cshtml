@@ -1,0 +1,117 @@
+@model IEnumerable<HostelEase.Models.RoomAllocation>
+@{
+    ViewData["Title"] = "Room Allocations";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Student Bed Allocations</h4>
+        <p class="text-muted small mb-0">Active bed assignments, transfers, check-ins, and vacating check-outs</p>
+    </div>
+    <a asp-action="Allocate" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> New Bed Allocation
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search student name, ID, room, or bed..." value="@ViewBag.Search" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="All">All Statuses</option>
+                <option value="Active" selected="@(ViewBag.CurrentStatus == "Active")">Active Allocations</option>
+                <option value="Vacated" selected="@(ViewBag.CurrentStatus == "Vacated")">Vacated Beds</option>
+                <option value="Transferred" selected="@(ViewBag.CurrentStatus == "Transferred")">Transferred</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="hostelId" class="form-select form-select-sm" asp-items="ViewBag.Hostels">
+                <option value="">All Hostels</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Resident Student</th>
+                    <th>Hostel Block</th>
+                    <th>Room & Bed</th>
+                    <th>Allocation Date</th>
+                    <th>Expected Vacating</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@a.StudentId" class="fw-bold text-dark text-decoration-none">
+                                    @a.Student?.FullName
+                                </a>
+                                <div class="small text-muted">ID: @a.Student?.StudentId &middot; @a.Student?.Department</div>
+                            </td>
+                            <td>
+                                <span class="fw-semibold">@a.Bed?.Room?.Hostel?.Name</span>
+                                <div class="small text-muted">@a.Bed?.Room?.Hostel?.Code</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-primary border fs-7">
+                                    Room @a.Bed?.Room?.RoomNumber &middot; Bed @a.Bed?.BedNumber
+                                </span>
+                                <div class="small text-muted">@a.Bed?.Room?.RoomType</div>
+                            </td>
+                            <td class="small">@a.AllocationDate.ToString("dd MMM yyyy")</td>
+                            <td class="small text-muted">
+                                @(a.ExpectedVacatingDate.HasValue ? a.ExpectedVacatingDate.Value.ToString("dd MMM yyyy") : "N/A")
+                            </td>
+                            <td>
+                                <span class="badge-status @(a.Status == "Active" ? "badge-active" : a.Status == "Vacated" ? "badge-inactive" : "badge-in-progress")">
+                                    @a.Status
+                                </span>
+                            </td>
+                            <td>
+                                @if (a.Status == "Active")
+                                {
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Transfer" asp-route-id="@a.Id" class="btn btn-outline-primary-custom py-0 px-2" title="Transfer Student to Another Bed">
+                                            Transfer
+                                        </a>
+                                        <a asp-action="Vacate" asp-route-id="@a.Id" class="btn btn-outline-danger py-0 px-2" title="Check-out / Vacate Bed">
+                                            Vacate
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Completed</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No allocations matching filters.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

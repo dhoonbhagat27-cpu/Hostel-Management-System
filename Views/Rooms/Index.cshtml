@@ -1,0 +1,113 @@
+@model IEnumerable<HostelEase.Models.Room>
+@{
+    ViewData["Title"] = "Rooms & Beds";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Room & Bed Inventory</h4>
+        <p class="text-muted small mb-0">Manage hostel rooms, floor allocations, sharing types, and bed statuses</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add New Room
+        </a>
+    }
+</div>
+
+<!-- Filter Bar -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <select name="hostelId" class="form-select form-select-sm" asp-items="ViewBag.Hostels">
+                <option value="">All Hostels</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="roomType" class="form-select form-select-sm">
+                <option value="All">All Room Types</option>
+                <option value="Single" selected="@(ViewBag.SelectedRoomType == "Single")">Single</option>
+                <option value="Double" selected="@(ViewBag.SelectedRoomType == "Double")">Double</option>
+                <option value="Triple" selected="@(ViewBag.SelectedRoomType == "Triple")">Triple</option>
+                <option value="Four-Sharing" selected="@(ViewBag.SelectedRoomType == "Four-Sharing")">Four-Sharing</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="All">All Statuses</option>
+                <option value="Available" selected="@(ViewBag.SelectedStatus == "Available")">Available</option>
+                <option value="Full" selected="@(ViewBag.SelectedStatus == "Full")">Full</option>
+                <option value="Maintenance" selected="@(ViewBag.SelectedStatus == "Maintenance")">Maintenance</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Hostel</th>
+                    <th>Room #</th>
+                    <th>Floor</th>
+                    <th>Sharing Type</th>
+                    <th>Monthly Fee</th>
+                    <th>Bed Capacity</th>
+                    <th>Occupancy</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var r in Model)
+                    {
+                        var occ = r.Beds.Count(b => b.Status == "Occupied");
+                        <tr>
+                            <td class="fw-semibold">@r.Hostel?.Name</td>
+                            <td class="fw-bold text-dark">Room @r.RoomNumber</td>
+                            <td>Floor @r.Floor</td>
+                            <td>@r.RoomType</td>
+                            <td class="fw-semibold text-primary">₹@r.MonthlyFee.ToString("N0")</td>
+                            <td>@r.Capacity Beds</td>
+                            <td>
+                                <span class="badge @(occ >= r.Capacity ? "bg-danger" : "bg-success")">
+                                    @occ / @r.Capacity
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge-status @(r.Status == "Available" ? "badge-available" : r.Status == "Full" ? "badge-full" : "badge-maintenance")">
+                                    @r.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@r.Id" class="btn btn-outline-primary-custom py-0 px-2" title="Manage Beds">
+                                        <i class="bi bi-door-open"></i> Beds
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@r.Id" class="btn btn-outline-secondary py-0 px-2" title="Edit Room">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="9" class="text-center text-muted py-4">No rooms found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

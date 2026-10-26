@@ -1,0 +1,72 @@
+@model HostelEase.Models.Hostel
+@{
+    ViewData["Title"] = "Assigned Hostel Information";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card card-custom mb-4">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building-fill text-primary fs-3"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">@Model.Name</h5>
+                        <small class="text-muted">Hostel Code: @Model.Code &middot; Type: @Model.HostelType</small>
+                    </div>
+                </div>
+                <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-warning")">
+                    @Model.Status
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <label class="text-muted small fw-semibold text-uppercase">Assigned Chief Warden</label>
+                        <div class="fw-bold">@(Model.AssignedWarden?.FullName ?? "Unassigned")</div>
+                        <div class="small text-muted">@(Model.AssignedWarden?.PhoneNumber ?? "")</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted small fw-semibold text-uppercase">Emergency Contact</label>
+                        <div class="fw-bold">@Model.ContactNumber</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted small fw-semibold text-uppercase">Total Floors</label>
+                        <div class="fw-bold">@Model.TotalFloors Floors</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted small fw-semibold text-uppercase">Address & Location</label>
+                        <div class="fw-semibold text-secondary">@Model.Address</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted small fw-semibold text-uppercase">Facilities & Description</label>
+                        <p class="text-secondary small mb-0">@Model.Description</p>
+                    </div>
+                </div>
+
+                <div class="border-top pt-3">
+                    <h6 class="fw-bold text-dark mb-3">Hostel Rooms Overview (@Model.Rooms.Count Total Rooms)</h6>
+                    <div class="row g-2">
+                        @foreach (var room in Model.Rooms.OrderBy(r => r.RoomNumber))
+                        {
+                            var occ = room.Beds.Count(b => b.Status == "Occupied");
+                            <div class="col-md-4 col-sm-6">
+                                <div class="border rounded-3 p-2 bg-light d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold text-dark small">Room @room.RoomNumber</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">Floor @room.Floor &middot; @room.RoomType</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge @(occ >= room.Capacity ? "bg-danger" : "bg-success")">
+                                            @occ / @room.Capacity Beds
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

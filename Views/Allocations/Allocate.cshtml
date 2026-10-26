@@ -1,0 +1,72 @@
+@model HostelEase.ViewModels.AllocateBedViewModel
+@{
+    ViewData["Title"] = "Allocate Bed";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-check-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Allocate Bed to Student</h5>
+                        <small class="text-muted">Assign an available room and bed to an unallocated resident</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Allocate" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="StudentId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="StudentId" class="form-select" asp-items="Model.StudentsList">
+                                <option value="">-- Choose Eligible Student (Unallocated) --</option>
+                            </select>
+                            <span asp-validation-for="StudentId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="BedId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="BedId" class="form-select" asp-items="Model.AvailableBedsList">
+                                <option value="">-- Choose Available Bed --</option>
+                            </select>
+                            <span asp-validation-for="BedId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AllocationDate" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="AllocationDate" type="date" class="form-control" />
+                            <span asp-validation-for="AllocationDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ExpectedVacatingDate" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="ExpectedVacatingDate" type="date" class="form-control" />
+                            <span asp-validation-for="ExpectedVacatingDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Remarks" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Remarks" class="form-control" rows="2" placeholder="Admission notes, medical preferences, or special requests..."></textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-check2-circle me-1"></i> Confirm Bed Allocation
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

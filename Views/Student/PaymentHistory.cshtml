@@ -1,0 +1,57 @@
+@model IEnumerable<HostelEase.Models.FeePayment>
+@{
+    ViewData["Title"] = "Payment History";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Payment Records</h4>
+        <p class="text-muted small mb-0">Official receipts and payment confirmation history</p>
+    </div>
+    <a asp-action="MyFees" class="btn btn-outline-primary-custom btn-sm">
+        <i class="bi bi-wallet2 me-1"></i> Fee Obligations
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Receipt No.</th>
+                    <th>Fee Description</th>
+                    <th>Amount Paid</th>
+                    <th>Payment Method</th>
+                    <th>Reference / UTR</th>
+                    <th>Payment Date</th>
+                    <th>Print</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary font-monospace">@p.ReceiptNumber</td>
+                            <td class="small">@p.StudentFee?.FeeTitle</td>
+                            <td class="fw-bold text-success">₹@p.Amount.ToString("N2")</td>
+                            <td><span class="badge bg-light text-dark border">@p.PaymentMethod</span></td>
+                            <td class="small font-monospace text-muted">@p.TransactionReference</td>
+                            <td class="small">@p.PaymentDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <a asp-controller="Fees" asp-action="Receipt" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Print Receipt">
+                                    <i class="bi bi-printer me-1"></i> Receipt
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No payments recorded on your profile.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

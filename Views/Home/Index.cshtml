@@ -1,0 +1,221 @@
+@model IEnumerable<HostelEase.Models.Announcement>
+@{
+    ViewData["Title"] = "Girls' Hostel Management System";
+}
+
+<!-- Hero Section -->
+<section class="hero-section" style="background: radial-gradient(circle at top left, #faf5ff 0%, #f5f3ff 50%, #ffffff 100%);">
+    <div class="container py-3">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7">
+                <span class="badge bg-purple-subtle text-purple border px-3 py-2 rounded-pill fw-semibold mb-3" style="background-color: #f3e8ff; color: #7e22ce; border-color: #d8b4fe !important;">
+                    <i class="bi bi-shield-heart-fill me-1"></i> Women's Residential Campus • B.Tech Capstone Project
+                </span>
+                <h1 class="display-4 fw-bold text-dark mb-3">
+                    Safe, Empowering & Intelligent <span class="text-purple" style="color: #7e22ce;">Girls' Hostel Management</span>
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    HostelEase is an institutional residence platform engineered specifically for women's residential campuses. Experience biometric evening roll-call (8:30 PM curfew), digital gate-pass workflows with parent consent, authorized visitor management, and automated room allocation.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary-custom btn-lg px-4 shadow-sm" style="background: linear-gradient(135deg, #7e22ce 0%, #4f46e5 100%); border: none;">
+                        <i class="bi bi-person-plus-fill me-2"></i> Resident Registration (Girls Only)
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary-custom btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Resident & Staff Sign In
+                    </a>
+                </div>
+
+                <!-- Fast Demo Credentials Card -->
+                <div class="card bg-white border mt-4 p-3 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-shield-check text-purple me-2" style="color: #7e22ce;"></i>
+                        <span class="fw-bold text-dark small text-uppercase">Demonstration Accounts (Pre-Seeded)</span>
+                    </div>
+                    <div class="row g-2 small text-muted">
+                        <div class="col-md-4">
+                            <span class="badge bg-danger-subtle text-danger">Chief Admin</span><br/>
+                            <code>admin@hostelease.com</code><br/>
+                            <code>Admin@123</code>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="badge bg-warning-subtle text-warning">Chief Warden</span><br/>
+                            <code>warden.sarojini@hostelease.com</code><br/>
+                            <code>Warden@123</code>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="badge bg-success-subtle text-success">Female Resident</span><br/>
+                            <code>priya.patel@hostelease.com</code><br/>
+                            <code>Student@123</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <!-- Visual Card Mockup -->
+                <div class="card border shadow-lg rounded-4 p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="p-2 rounded-3 text-white" style="background-color: #7e22ce;">
+                                <i class="bi bi-shield-heart fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Women's Enclave Status</h6>
+                                <small class="text-muted">Live Campus Data (SQL Server)</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">24/7 Monitored</span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <h3 class="fw-bold mb-0" style="color: #7e22ce;">@(ViewBag.TotalHostels ?? 2)</h3>
+                                <small class="text-muted fw-semibold">Girls' Halls</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <h3 class="fw-bold text-primary mb-0">@(ViewBag.TotalRooms ?? 5)</h3>
+                                <small class="text-muted fw-semibold">Equipped Rooms</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <h3 class="fw-bold text-success mb-0">@(ViewBag.TotalBeds ?? 11)</h3>
+                                <small class="text-muted fw-semibold">Resident Beds</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <h3 class="fw-bold text-warning mb-0">@(ViewBag.ActiveStudents ?? 3)</h3>
+                                <small class="text-muted fw-semibold">Female Residents</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2 text-muted small border-top pt-3">
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        <span>Zero paper registers. 100% digital curfew, leave & visitor ledger.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modules & Features Highlights -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center max-w-xl mx-auto mb-5">
+            <span class="text-purple fw-bold text-uppercase small tracking-wide" style="color: #7e22ce;">Campus Living Infrastructure</span>
+            <h2 class="fw-bold mt-1">Engineered for Resident Safety & Dignity</h2>
+            <p class="text-secondary">Explore key modules purpose-built for women's residential administration.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #f3e8ff; color: #7e22ce;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">8:30 PM Curfew & Attendance</h5>
+                    <p class="text-secondary small mb-0">
+                        Evening biometric roll-call monitoring. Wardens receive instant absent lists; automated alert triggers keep campus security fully informed.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #ecfdf5; color: #059669;">
+                        <i class="bi bi-envelope-paper-heart"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Parent-Verified Leave Pass</h5>
+                    <p class="text-secondary small mb-0">
+                        Electronic leave requests for weekend home visits and conferences. Tracks destination, emergency contact, and warden sign-off.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #fff1f2; color: #e11d48;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Verified Visitor Protocol</h5>
+                    <p class="text-secondary small mb-0">
+                        Strict reception desk check-in for parents and registered Local Guardians (LGs). Identity document recording and designated lounge hours.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #eff6ff; color: #2563eb;">
+                        <i class="bi bi-door-open"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Secure Bed Allocation</h5>
+                    <p class="text-secondary small mb-0">
+                        Hierarchical Block &rarr; Floor &rarr; Room &rarr; Bed allocation. Concurrency tokens prevent double booking and ensure room capacity discipline.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #fffbeb; color: #d97706;">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Hostel Amenities & Grievance</h5>
+                    <p class="text-secondary small mb-0">
+                        Swift resolution desk for Wi-Fi access, hot water geysers, air conditioning, reading lounges, and sanitary disposal amenities.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon" style="background-color: #f0fdfa; color: #0d9488;">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Fee Accounting & Receipts</h5>
+                    <p class="text-secondary small mb-0">
+                        Transparent fee tracking for room rent, mess charges, and deposits. Printable university fee receipts with unique voucher numbers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Active Announcements Board -->
+@if (Model != null && Model.Any())
+{
+    <section class="py-5 bg-light border-top">
+        <div class="container py-2">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h4 class="fw-bold mb-1"><i class="bi bi-megaphone text-purple me-2" style="color: #7e22ce;"></i> Resident Notice Board</h4>
+                    <p class="text-muted small mb-0">Official notices from Chief Warden and Hostel Office.</p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 border rounded-3 p-3 bg-white shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge @(item.Priority == "Urgent" ? "bg-danger" : item.Priority == "Important" ? "bg-warning text-dark" : "bg-primary") small">
+                                    @item.Priority
+                                </span>
+                                <small class="text-muted">@item.PublishDate.ToString("dd MMM yyyy")</small>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">@item.Title</h6>
+                            <p class="text-secondary small mb-0">
+                                @(item.Content.Length > 120 ? item.Content.Substring(0, 120) + "..." : item.Content)
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}

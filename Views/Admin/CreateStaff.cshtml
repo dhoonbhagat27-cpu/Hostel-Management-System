@@ -1,0 +1,88 @@
+@model HostelEase.ViewModels.StaffCreateViewModel
+@{
+    ViewData["Title"] = "Register Staff Member";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-badge-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Register Staff / Warden</h5>
+                        <small class="text-muted">Create authorized staff login credentials and hostel assignments</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="CreateStaff" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="StaffId" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="StaffId" class="form-control" placeholder="e.g. WRD-2026-03" />
+                            <span asp-validation-for="StaffId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Staff Full Name" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control" placeholder="staff@hostelease.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+91 98765 00000" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Designation" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Designation" class="form-select">
+                                <option value="Chief Warden">Chief Warden</option>
+                                <option value="Assistant Warden">Assistant Warden</option>
+                                <option value="Hostel Administrator">Hostel Administrator</option>
+                                <option value="Admin Staff">Admin Staff</option>
+                            </select>
+                            <span asp-validation-for="Designation" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AssignedHostelId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="AssignedHostelId" class="form-select" asp-items="ViewBag.Hostels">
+                                <option value="">-- Campus Wide / Unassigned --</option>
+                            </select>
+                            <span asp-validation-for="AssignedHostelId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Password" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-check-circle-fill me-1"></i> Register Staff Account
+                            </button>
+                            <a asp-action="Staff" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

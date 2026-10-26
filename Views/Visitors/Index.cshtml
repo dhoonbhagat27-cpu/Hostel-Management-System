@@ -1,0 +1,131 @@
+@model IEnumerable<HostelEase.Models.Visitor>
+@{
+    ViewData["Title"] = "Visitor Management";
+    bool currentlyInside = ViewBag.CurrentlyInside ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Campus Visitor Register</h4>
+        <p class="text-muted small mb-0">Record and monitor guest entries, visits, and gate check-outs</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Reports" asp-action="ExportCsv" asp-route-type="visitors" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Visitors CSV
+        </a>
+        <a asp-action="Register" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Visitor
+        </a>
+    </div>
+</div>
+
+<!-- Indicator Card -->
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+            <div>
+                <small class="text-muted text-uppercase fw-semibold d-block">Visitors Currently Inside</small>
+                <span class="fs-4 fw-bold text-primary">@ViewBag.InsideCount</span>
+            </div>
+            <a asp-action="Index" asp-route-currentlyInside="true" class="btn btn-sm btn-outline-primary-custom">Filter Inside Only</a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search by visitor name, phone, student name..." value="@ViewBag.Search" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" name="currentlyInside" value="true" id="insideToggle" @(currentlyInside ? "checked" : "") onchange="this.form.submit()">
+                <label class="form-check-label small fw-semibold text-secondary" for="insideToggle">Currently Inside Only</label>
+            </div>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Visitor Name</th>
+                    <th>Contact</th>
+                    <th>Visiting Student</th>
+                    <th>Relation</th>
+                    <th>Entry Timestamp</th>
+                    <th>Exit Timestamp</th>
+                    <th>Purpose of Visit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var v in Model)
+                    {
+                        var activeAlloc = v.Student?.Allocations.FirstOrDefault();
+                        <tr>
+                            <td class="fw-bold text-dark">@v.VisitorName</td>
+                            <td class="small font-monospace">@v.ContactNumber</td>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@v.StudentId" class="fw-semibold text-dark text-decoration-none">
+                                    @v.Student?.FullName
+                                </a>
+                                <div class="small text-muted">
+                                    @if (activeAlloc?.Bed?.Room != null)
+                                    {
+                                        <span>Room @activeAlloc.Bed.Room.RoomNumber (@activeAlloc.Bed.Room.Hostel?.Code)</span>
+                                    }
+                                </div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@v.RelationToStudent</span></td>
+                            <td class="small text-muted">@v.EntryTime.ToString("dd MMM yyyy, hh:mm tt")</td>
+                            <td>
+                                @if (v.ExitTime.HasValue)
+                                {
+                                    <span class="small text-muted">@v.ExitTime.Value.ToString("dd MMM yyyy, hh:mm tt")</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                        <i class="bi bi-clock-history me-1"></i> Currently Inside
+                                    </span>
+                                }
+                            </td>
+                            <td class="small text-secondary" style="max-width: 200px;">@v.PurposeOfVisit</td>
+                            <td>
+                                @if (!v.ExitTime.HasValue)
+                                {
+                                    <form asp-action="RecordExit" asp-route-id="@v.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Record Visitor Departure">
+                                            <i class="bi bi-box-arrow-right me-1"></i> Check-out
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-muted border">Completed</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No visitor records matching criteria.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+@model HostelEase.ViewModels.ComplaintResolveViewModel
+@{
+    ViewData["Title"] = $"Resolve Complaint #{Model.Id}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-tools text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Update Complaint Status & Assignment</h5>
+                        <small class="text-muted">Ticket #@Model.Id &middot; Filed on @Model.SubmissionDate.ToString("dd MMM yyyy")</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Complaint Summary -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="row g-2 small">
+                        <div class="col-sm-6"><span class="text-muted">Student:</span> <strong>@Model.StudentName</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Location:</span> <strong>@Model.RoomInfo</strong></div>
+                        <div class="col-sm-6"><span class="text-muted">Category:</span> <span class="badge bg-light text-dark border">@Model.Category</span></div>
+                        <div class="col-sm-6"><span class="text-muted">Priority:</span> <span class="badge bg-warning text-dark">@Model.Priority</span></div>
+                        <div class="col-12 mt-2">
+                            <span class="text-muted">Subject:</span> <strong class="text-dark">@Model.Subject</strong>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted">Description:</span>
+                            <p class="mb-0 text-secondary">@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form asp-action="Resolve" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="StudentName" />
+                    <input type="hidden" asp-for="RoomInfo" />
+                    <input type="hidden" asp-for="Category" />
+                    <input type="hidden" asp-for="Priority" />
+                    <input type="hidden" asp-for="Subject" />
+                    <input type="hidden" asp-for="Description" />
+                    <input type="hidden" asp-for="SubmissionDate" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="In Progress">In Progress (Assigned / Investigating)</option>
+                                <option value="Resolved">Resolved (Repairs Finished)</option>
+                                <option value="Closed">Closed (Verified & Signed Off)</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AssignedStaffId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="AssignedStaffId" class="form-select" asp-items="Model.StaffList">
+                                <option value="">-- Assign Staff / Warden --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="ResolutionRemarks" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="ResolutionRemarks" class="form-control" rows="3" placeholder="Describe actions taken, replaced components, vendor notes, or feedback for the student..."></textarea>
+                            <span asp-validation-for="ResolutionRemarks" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-check2-circle me-1"></i> Save Resolution Status
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

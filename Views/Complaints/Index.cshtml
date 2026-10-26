@@ -1,0 +1,138 @@
+@model IEnumerable<HostelEase.Models.Complaint>
+@{
+    ViewData["Title"] = "Complaint Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Complaints & Maintenance</h4>
+        <p class="text-muted small mb-0">Review, assign repair technicians, and track resolution lifecycles</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Reports" asp-action="ExportCsv" asp-route-type="complaints" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Complaints CSV
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-3">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search subject or student..." value="@ViewBag.Search" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="All">All Statuses</option>
+                <option value="Submitted" selected="@(ViewBag.CurrentStatus == "Submitted")">Submitted</option>
+                <option value="In Progress" selected="@(ViewBag.CurrentStatus == "In Progress")">In Progress</option>
+                <option value="Resolved" selected="@(ViewBag.CurrentStatus == "Resolved")">Resolved</option>
+                <option value="Closed" selected="@(ViewBag.CurrentStatus == "Closed")">Closed</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="priority" class="form-select form-select-sm">
+                <option value="All">All Priorities</option>
+                <option value="Low" selected="@(ViewBag.CurrentPriority == "Low")">Low</option>
+                <option value="Medium" selected="@(ViewBag.CurrentPriority == "Medium")">Medium</option>
+                <option value="High" selected="@(ViewBag.CurrentPriority == "High")">High</option>
+                <option value="Urgent" selected="@(ViewBag.CurrentPriority == "Urgent")">Urgent</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="category" class="form-select form-select-sm">
+                <option value="All">All Categories</option>
+                <option value="Electrical" selected="@(ViewBag.CurrentCategory == "Electrical")">Electrical</option>
+                <option value="Plumbing" selected="@(ViewBag.CurrentCategory == "Plumbing")">Plumbing</option>
+                <option value="Internet / Wi-Fi" selected="@(ViewBag.CurrentCategory == "Internet / Wi-Fi")">Internet</option>
+                <option value="Furniture" selected="@(ViewBag.CurrentCategory == "Furniture")">Furniture</option>
+                <option value="Cleaning" selected="@(ViewBag.CurrentCategory == "Cleaning")">Cleaning</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-primary-custom flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Student & Room</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Subject & Issue</th>
+                    <th>Submitted</th>
+                    <th>Assigned Staff</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var c in Model)
+                    {
+                        var activeAlloc = c.Student?.Allocations.FirstOrDefault();
+                        <tr>
+                            <td>
+                                <a asp-controller="Students" asp-action="Details" asp-route-id="@c.StudentId" class="fw-bold text-dark text-decoration-none">
+                                    @c.Student?.FullName
+                                </a>
+                                <div class="small text-muted">
+                                    @if (activeAlloc?.Bed?.Room != null)
+                                    {
+                                        <span>Room @activeAlloc.Bed.Room.RoomNumber (@activeAlloc.Bed.Room.Hostel?.Code)</span>
+                                    }
+                                    else
+                                    {
+                                        <span>No Active Room</span>
+                                    }
+                                </div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@c.Category</span></td>
+                            <td>
+                                <span class="badge @(c.Priority == "Urgent" ? "bg-danger" : c.Priority == "High" ? "bg-warning text-dark" : "bg-info text-dark")">
+                                    @c.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@c.Subject</div>
+                                <div class="small text-secondary text-truncate" style="max-width: 250px;">@c.Description</div>
+                            </td>
+                            <td class="small text-muted">@c.SubmissionDate.ToString("dd MMM, hh:mm tt")</td>
+                            <td class="small">
+                                @(c.AssignedStaff?.FullName ?? "Unassigned")
+                            </td>
+                            <td>
+                                <span class="badge-status @(c.Status == "Resolved" ? "badge-resolved" : c.Status == "In Progress" ? "badge-in-progress" : "badge-submitted")">
+                                    @c.Status
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Resolve" asp-route-id="@c.Id" class="btn btn-primary-custom py-0 px-2" title="Update Status / Resolve">
+                                        Update
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-outline-secondary py-0 px-2" title="View Full Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No complaints matching filter.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

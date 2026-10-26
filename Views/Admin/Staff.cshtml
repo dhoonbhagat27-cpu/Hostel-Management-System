@@ -1,0 +1,70 @@
+@model IEnumerable<HostelEase.Models.Staff>
+@{
+    ViewData["Title"] = "Staff & Wardens";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Wardens & Staff Directory</h4>
+        <p class="text-muted small mb-0">Authorized personnel overseeing hostel blocks and student welfare</p>
+    </div>
+    <a asp-action="CreateStaff" class="btn btn-primary-custom btn-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Register New Staff
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Assigned Hostel</th>
+                    <th>Contact</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@s.StaffId</td>
+                        <td>
+                            <div class="fw-bold text-dark">@s.FullName</div>
+                            <div class="small text-muted">@s.Email</div>
+                        </td>
+                        <td><span class="badge bg-light text-primary border">@s.Designation</span></td>
+                        <td>
+                            @if (s.AssignedHostel != null)
+                            {
+                                <span class="fw-semibold text-secondary"><i class="bi bi-building me-1"></i> @s.AssignedHostel.Name</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Campus-wide / Unassigned</span>
+                            }
+                        </td>
+                        <td class="small">@s.PhoneNumber</td>
+                        <td class="small text-muted">@s.JoiningDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <span class="badge-status @(s.IsActive ? "badge-active" : "badge-inactive")">
+                                @(s.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <form asp-action="ToggleStaffStatus" asp-route-id="@s.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm @(s.IsActive ? "btn-outline-danger" : "btn-outline-success") py-0 px-2">
+                                    @(s.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

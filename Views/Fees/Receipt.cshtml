@@ -1,0 +1,125 @@
+@model HostelEase.Models.FeePayment
+@{
+    ViewData["Title"] = $"Receipt - {Model.ReceiptNumber}";
+    var student = Model.StudentFee?.Student;
+    var activeAlloc = student?.Allocations.FirstOrDefault(a => a.Status == "Active");
+}
+
+<div class="container py-4">
+    <!-- Non-printable top action bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <div>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-primary-custom btn-sm btn-print">
+                <i class="bi bi-printer me-1"></i> Print / Download PDF Receipt
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Printable Receipt Card -->
+    <div class="card printable-receipt-card border rounded-4 p-4 p-md-5 bg-white shadow-sm mx-auto" style="max-width: 800px;">
+        <!-- Header -->
+        <div class="row align-items-center border-bottom pb-4 mb-4">
+            <div class="col-8">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi bi-buildings-fill text-primary fs-2"></i>
+                    <h3 class="fw-bold text-dark mb-0">HostelEase</h3>
+                </div>
+                <div class="text-secondary small">Campus Residential Services & Hostel Administration</div>
+                <div class="text-muted small">Engineering Campus, Sector 4 &middot; Contact: +91 98765 43210</div>
+            </div>
+            <div class="col-4 text-end">
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fs-6 mb-2">
+                    PAYMENT CONFIRMED
+                </span>
+                <div class="small fw-bold text-muted text-uppercase">Receipt No:</div>
+                <div class="fw-bold font-monospace text-primary fs-6">@Model.ReceiptNumber</div>
+                <div class="text-muted small">Date: @Model.PaymentDate.ToString("dd MMM yyyy")</div>
+            </div>
+        </div>
+
+        <!-- Student & Allocation Details -->
+        <div class="row g-3 mb-4 bg-light p-3 rounded-3 border">
+            <div class="col-sm-6">
+                <small class="text-muted text-uppercase fw-semibold d-block">Student Resident</small>
+                <span class="fw-bold text-dark fs-6">@student?.FullName</span>
+                <div class="small text-muted">Enrollment ID: @student?.StudentId</div>
+                <div class="small text-muted">@student?.Department (@student?.AcademicYear)</div>
+            </div>
+            <div class="col-sm-6">
+                <small class="text-muted text-uppercase fw-semibold d-block">Room & Accommodation</small>
+                @if (activeAlloc?.Bed?.Room != null)
+                {
+                    <span class="fw-bold text-dark fs-6">Room @activeAlloc.Bed.Room.RoomNumber [Bed @activeAlloc.Bed.BedNumber]</span>
+                    <div class="small text-muted">@activeAlloc.Bed.Room.Hostel?.Name</div>
+                    <div class="small text-muted">@activeAlloc.Bed.Room.RoomType Sharing</div>
+                }
+                else
+                {
+                    <span class="text-muted small">Campus Residence</span>
+                }
+            </div>
+        </div>
+
+        <!-- Payment Details Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fee Obligation Description</th>
+                        <th class="text-center">Total Invoiced</th>
+                        <th class="text-center">Already Paid</th>
+                        <th class="text-end">Amount Paid Now</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">@Model.StudentFee?.FeeTitle</div>
+                            <div class="small text-muted">Transaction Reference: @Model.TransactionReference</div>
+                        </td>
+                        <td class="text-center">₹@(Model.StudentFee?.TotalAmount.ToString("N2"))</td>
+                        <td class="text-center">₹@((Model.StudentFee?.PaidAmount - Model.Amount)?.ToString("N2"))</td>
+                        <td class="text-end fw-bold text-success fs-6">₹@Model.Amount.ToString("N2")</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">Total Amount Paid:</th>
+                        <th class="text-end fw-bold fs-5 text-primary">₹@Model.Amount.ToString("N2")</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-end text-muted small">Remaining Balance Outstanding:</th>
+                        <th class="text-end fw-bold text-danger">₹@(Model.StudentFee?.BalanceAmount.ToString("N2"))</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Meta and Signature Blocks -->
+        <div class="row pt-4 border-top gy-4">
+            <div class="col-6 small">
+                <div class="mb-1"><span class="text-muted">Payment Mode:</span> <strong class="text-dark">@Model.PaymentMethod</strong></div>
+                <div class="mb-1"><span class="text-muted">Reference / UTR:</span> <span class="font-monospace">@Model.TransactionReference</span></div>
+                <div class="mb-0"><span class="text-muted">Remarks:</span> @(string.IsNullOrEmpty(Model.Remarks) ? "Verified and recorded." : Model.Remarks)</div>
+            </div>
+            <div class="col-6 text-end">
+                <div class="d-inline-block text-center mt-3" style="width: 200px;">
+                    <div class="border-bottom pb-3 mb-1 text-muted" style="border-style: dashed !important;">
+                        <span class="badge bg-light text-dark border"><i class="bi bi-shield-check text-success"></i> Digitally Verified</span>
+                    </div>
+                    <small class="text-muted fw-bold text-uppercase d-block">Authorized Signatory</small>
+                    <small class="text-muted" style="font-size: 0.72rem;">Hostel Accounts Section</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-muted border-top pt-3 mt-4" style="font-size: 0.75rem;">
+            This is a computer-generated official hostel fee receipt issued by HostelEase Management System. No manual signature required.
+        </div>
+    </div>
+</div>

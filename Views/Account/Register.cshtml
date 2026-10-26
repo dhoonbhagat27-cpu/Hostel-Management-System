@@ -1,0 +1,231 @@
+@model HostelEase.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Girls' Hostel Resident Registration";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card border rounded-4 shadow-sm p-4 p-md-5 bg-white">
+                <div class="text-center mb-4">
+                    <div class="p-3 bg-purple-subtle text-purple rounded-circle d-inline-block mb-2" style="width: 60px; height: 60px; display: inline-flex; align-items: center; justify-content: center; background-color: #f3e8ff; color: #7e22ce;">
+                        <i class="bi bi-shield-heart-fill fs-2"></i>
+                    </div>
+                    <span class="d-block badge bg-purple-subtle text-purple border px-3 py-1 rounded-pill mb-2 mx-auto" style="width: fit-content; background-color: #f3e8ff; color: #7e22ce; border-color: #d8b4fe !important;">
+                        <i class="bi bi-gender-female me-1"></i> Women's Residential Campus
+                    </span>
+                    <h3 class="fw-bold text-dark mb-1">Girls' Hostel Resident Registration</h3>
+                    <p class="text-muted small">Official Institutional Residential Enrollment for Female Students & Scholars</p>
+                </div>
+
+                <!-- Safety & Regulation Notice -->
+                <div class="alert alert-info py-2 px-3 small border-0 text-dark mb-4 rounded-3 d-flex align-items-center" style="background-color: #ede9fe;">
+                    <i class="bi bi-shield-lock-fill text-purple fs-4 me-3" style="color: #6b21a8;"></i>
+                    <div>
+                        <strong class="text-purple" style="color: #6b21a8;">Safety & Curfew Notice:</strong> 
+                        This portal is exclusively for female students seeking accommodation in our monitored campus halls. Registration requires verified Local Guardian details, emergency medical information, and compliance with the <strong>8:30 PM evening biometric curfew</strong> and digital gate-pass system.
+                    </div>
+                </div>
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <!-- Hidden Gender strictly Female -->
+                    <input type="hidden" asp-for="Gender" value="Female" />
+
+                    <div class="row g-3">
+                        <!-- Section 1 -->
+                        <div class="col-12">
+                            <h6 class="fw-bold text-purple border-bottom pb-2 mb-3" style="color: #7e22ce;">
+                                <i class="bi bi-person-circle me-1"></i> 1. Resident Personal & Academic Profile
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="e.g. Ananya Sharma" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="StudentId" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="StudentId" class="form-control" placeholder="e.g. STU2026-GH101" />
+                            <span asp-validation-for="StudentId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control" placeholder="student@university.edu" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+91 98765 43210" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Department" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Department" class="form-select">
+                                <option value="Computer Engineering">Computer Engineering</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Electronics & Communication">Electronics & Communication</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Biotechnology">Biotechnology</option>
+                            </select>
+                            <span asp-validation-for="Department" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="AcademicYear" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="AcademicYear" class="form-select">
+                                <option value="1st Year">1st Year (Undergraduate)</option>
+                                <option value="2nd Year">2nd Year (Undergraduate)</option>
+                                <option value="3rd Year">3rd Year (Undergraduate)</option>
+                                <option value="4th Year">4th Year (Undergraduate)</option>
+                                <option value="Postgraduate / Research">Postgraduate / Research</option>
+                            </select>
+                            <span asp-validation-for="AcademicYear" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-secondary">Resident Gender</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-purple"><i class="bi bi-gender-female"></i></span>
+                                <input type="text" class="form-control bg-light" value="Female (Girls' Hostel)" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="DateOfBirth" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="BloodGroup" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="BloodGroup" class="form-select">
+                                <option value="A+">A+ (Positive)</option>
+                                <option value="A-">A- (Negative)</option>
+                                <option value="B+">B+ (Positive)</option>
+                                <option value="B-">B- (Negative)</option>
+                                <option value="O+">O+ (Positive)</option>
+                                <option value="O-">O- (Negative)</option>
+                                <option value="AB+">AB+ (Positive)</option>
+                                <option value="AB-">AB- (Negative)</option>
+                            </select>
+                            <span asp-validation-for="BloodGroup" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Section 2 -->
+                        <div class="col-12 mt-4">
+                            <h6 class="fw-bold text-purple border-bottom pb-2 mb-3" style="color: #7e22ce;">
+                                <i class="bi bi-people-fill me-1"></i> 2. Parent / Primary Guardian & Permanent Address
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="GuardianName" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="GuardianName" class="form-control" placeholder="Mother's or Father's Full Name" />
+                            <span asp-validation-for="GuardianName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="GuardianContact" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="GuardianContact" class="form-control" placeholder="Primary Contact Number" />
+                            <span asp-validation-for="GuardianContact" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Address" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Address" class="form-control" rows="2" placeholder="Permanent Residence Address (House/Plot, City, State, PIN Code)"></textarea>
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Section 3 -->
+                        <div class="col-12 mt-4">
+                            <h6 class="fw-bold text-purple border-bottom pb-2 mb-3" style="color: #7e22ce;">
+                                <i class="bi bi-shield-fill-check me-1"></i> 3. Local Guardian (LG) & Emergency Safety Details
+                            </h6>
+                            <p class="text-muted small mb-3">
+                                <em>Required for outstation leave approvals, emergency hospital visits, and authorized weekend gate-passes.</em>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LocalGuardianName" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="LocalGuardianName" class="form-control" placeholder="e.g. Mrs. Sunita Verma (Maternal Aunt)" />
+                            <span asp-validation-for="LocalGuardianName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LocalGuardianContact" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="LocalGuardianContact" class="form-control" placeholder="+91 98222 11100" />
+                            <span asp-validation-for="LocalGuardianContact" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="LocalGuardianAddress" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="LocalGuardianAddress" class="form-control" placeholder="City / Area Address of Local Guardian" />
+                            <span asp-validation-for="LocalGuardianAddress" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="EmergencyContact" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="EmergencyContact" class="form-control" placeholder="24/7 Emergency Line (Parent/Doctor)" />
+                            <span asp-validation-for="EmergencyContact" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Section 4 -->
+                        <div class="col-12 mt-4">
+                            <h6 class="fw-bold text-purple border-bottom pb-2 mb-3" style="color: #7e22ce;">
+                                <i class="bi bi-key-fill me-1"></i> 4. Account Security & Curfew Declaration
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Min. 6 chars, uppercase & digits" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="card bg-light border p-3 rounded-3">
+                                <div class="form-check">
+                                    <input asp-for="AgreeToPolicies" class="form-check-input" />
+                                    <label asp-for="AgreeToPolicies" class="form-check-label small fw-semibold text-dark">
+                                        I hereby declare that the information provided is accurate. I agree to abide by the Girls' Hostel Rules & Regulations, including the <strong>8:30 PM evening biometric curfew</strong>, mandatory warden & parent authorization for outstation leaves, and strict visitor reception protocols.
+                                    </label>
+                                </div>
+                                <span asp-validation-for="AgreeToPolicies" class="text-danger small d-block mt-1"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary-custom w-100 py-3 fs-6 fw-bold shadow-sm" style="background: linear-gradient(135deg, #7e22ce 0%, #4f46e5 100%); border: none;">
+                                <i class="bi bi-check-circle-fill me-2"></i> Submit Girls' Hostel Registration
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="text-center border-top pt-3 mt-4">
+                    <span class="text-muted small">Already a registered resident?</span>
+                    <a asp-action="Login" class="text-purple small fw-bold text-decoration-none ms-1" style="color: #7e22ce;">Sign In to Resident Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

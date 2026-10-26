@@ -1,0 +1,139 @@
+@model HostelEase.Models.Hostel
+@{
+    ViewData["Title"] = $"Hostel Details - {Model.Name}";
+    var allBeds = Model.Rooms.SelectMany(r => r.Beds).ToList();
+    var occupiedBeds = allBeds.Count(b => b.Status == "Occupied");
+    var availableBeds = allBeds.Count(b => b.Status == "Available");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">@Model.Name</h4>
+        <p class="text-muted small mb-0">Code: <strong>@Model.Code</strong> &middot; Type: @Model.HostelType &middot; Total Floors: @Model.TotalFloors</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Rooms" asp-action="Create" asp-route-hostelId="@Model.Id" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add Room to Hostel
+        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil me-1"></i> Edit Hostel
+            </a>
+        }
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="bi bi-door-closed-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Total Rooms</div>
+                <div class="stat-value">@Model.Rooms.Count</div>
+                <div class="stat-subtext">Across @Model.TotalFloors floors</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--purple-light); color: var(--purple-accent);">
+                <i class="bi bi-layers-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Total Beds</div>
+                <div class="stat-value">@allBeds.Count</div>
+                <div class="stat-subtext">Capacity</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--emerald-light); color: var(--emerald-accent);">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Available Beds</div>
+                <div class="stat-value">@availableBeds</div>
+                <div class="stat-subtext text-success">Ready for allocation</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--amber-light); color: var(--amber-accent);">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-title">Occupied Beds</div>
+                <div class="stat-value">@occupiedBeds</div>
+                <div class="stat-subtext">Active residents</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rooms Table -->
+<div class="card card-custom">
+    <div class="card-header-custom">
+        <span class="fw-bold"><i class="bi bi-door-open text-primary me-2"></i> Rooms in this Hostel</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Room #</th>
+                    <th>Floor</th>
+                    <th>Room Type</th>
+                    <th>Monthly Fee</th>
+                    <th>Bed Capacity</th>
+                    <th>Occupied</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Rooms.Any())
+                {
+                    @foreach (var r in Model.Rooms.OrderBy(r => r.RoomNumber))
+                    {
+                        var occ = r.Beds.Count(b => b.Status == "Occupied");
+                        <tr>
+                            <td class="fw-bold text-dark">Room @r.RoomNumber</td>
+                            <td>Floor @r.Floor</td>
+                            <td>@r.RoomType</td>
+                            <td class="fw-semibold">₹@r.MonthlyFee.ToString("N0")</td>
+                            <td>@r.Capacity Beds</td>
+                            <td>
+                                <span class="badge @(occ >= r.Capacity ? "bg-danger" : "bg-success")">
+                                    @occ / @r.Capacity
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge-status @(r.Status == "Available" ? "badge-available" : r.Status == "Full" ? "badge-full" : "badge-maintenance")">
+                                    @r.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-controller="Rooms" asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-outline-primary-custom py-0 px-2">
+                                    View Beds
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No rooms added to this hostel yet.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

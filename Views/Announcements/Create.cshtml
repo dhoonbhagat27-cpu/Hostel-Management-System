@@ -1,0 +1,83 @@
+@model HostelEase.Models.Announcement
+@{
+    ViewData["Title"] = "Publish Announcement";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-megaphone-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Publish Official Notice</h5>
+                        <small class="text-muted">Post circulars for campus or hostel specific residents</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="Title" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Notice Heading (e.g. Mandatory Fire Drill Schedule)" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Priority" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="Normal">Normal</option>
+                                <option value="Important">Important</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="TargetAudience" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="TargetAudience" class="form-select" id="audienceSelect">
+                                <option value="All">All Campus</option>
+                                <option value="Students">All Students</option>
+                                <option value="Wardens">Wardens Only</option>
+                                <option value="Hostel Specific">Hostel Specific</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="HostelId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="HostelId" class="form-select" asp-items="ViewBag.Hostels">
+                                <option value="">-- All Hostels --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ExpiryDate" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="ExpiryDate" type="date" class="form-control" />
+                            <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Content" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Content" class="form-control" rows="5" placeholder="Detailed bulletin content and instructions..."></textarea>
+                            <span asp-validation-for="Content" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">
+                                <i class="bi bi-broadcast me-1"></i> Publish Announcement
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

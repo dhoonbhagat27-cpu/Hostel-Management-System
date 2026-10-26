@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "System Settings";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-custom mb-4">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">System Configuration</h5>
+                        <small class="text-muted">HostelEase administrative parameters and security state</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Application Version</label>
+                        <div class="fw-bold">HostelEase v1.0.0 (Release)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Framework & Runtime</label>
+                        <div class="fw-bold">.NET 10.0 / ASP.NET Core MVC</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Database Engine</label>
+                        <div class="fw-bold">Microsoft SQL Server (LocalDB)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Authentication Mode</label>
+                        <div class="fw-bold">ASP.NET Core Identity (PBKDF2 Hashing)</div>
+                    </div>
+                    <div class="col-12"><hr class="my-2"/></div>
+                    <div class="col-12">
+                        <h6 class="fw-bold text-dark mb-2">Hostel Operational Rules</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="rule1" checked disabled>
+                            <label class="form-check-label small fw-semibold" for="rule1">Strict Concurrency Allocation Lock</label>
+                        </div>
+                        <small class="text-muted d-block">Prevents simultaneous assignment of the same bed to multiple students.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="rule2" checked disabled>
+                            <label class="form-check-label small fw-semibold" for="rule2">Strict Role-Based URL Authorization</label>
+                        </div>
+                        <small class="text-muted d-block">Blocks students from viewing or mutating other residents' records or admin portals.</small>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="rule3" checked disabled>
+                            <label class="form-check-label small fw-semibold" for="rule3">Mandatory Leave Guardian Verification</label>
+                        </div>
+                        <small class="text-muted d-block">Requires emergency contact phone number on every leave filing.</small>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="rule4" checked disabled>
+                            <label class="form-check-label small fw-semibold" for="rule4">Live Visitor Check-in Tracking</label>
+                        </div>
+                        <small class="text-muted d-block">Maintains real-time logs of visitors inside campus boundaries.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

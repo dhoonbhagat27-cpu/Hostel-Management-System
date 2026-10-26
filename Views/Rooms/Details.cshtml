@@ -1,0 +1,163 @@
+@model HostelEase.Models.Room
+@{
+    ViewData["Title"] = $"Room {Model.RoomNumber} Details";
+    var occupiedCount = Model.Beds.Count(b => b.Status == "Occupied");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Room @Model.RoomNumber</h4>
+        <p class="text-muted small mb-0">@Model.Hostel?.Name &middot; Floor @Model.Floor &middot; @Model.RoomType Sharing</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Allocations" asp-action="Allocate" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Allocate Bed
+        </a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Edit Room
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to Rooms</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card card-custom h-100">
+            <div class="card-header-custom">
+                <span class="fw-bold">Room Specifications</span>
+                <span class="badge-status @(Model.Status == "Available" ? "badge-available" : Model.Status == "Full" ? "badge-full" : "badge-maintenance")">
+                    @Model.Status
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="text-muted small fw-semibold text-uppercase">Hostel Building</label>
+                    <div class="fw-bold">@Model.Hostel?.Name (@Model.Hostel?.Code)</div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small fw-semibold text-uppercase">Capacity & Occupancy</label>
+                    <div class="fw-bold fs-6">@occupiedCount / @Model.Capacity Beds Occupied</div>
+                    <div class="small text-muted">@Model.RoomType Sharing</div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small fw-semibold text-uppercase">Monthly Charge</label>
+                    <div class="fw-bold text-success fs-6">₹@Model.MonthlyFee.ToString("N2") / mo</div>
+                </div>
+                <div class="mb-0">
+                    <label class="text-muted small fw-semibold text-uppercase">Description</label>
+                    <p class="small text-secondary mb-0">@(string.IsNullOrEmpty(Model.Description) ? "Standard residential student room." : Model.Description)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Beds List -->
+    <div class="col-lg-8">
+        <div class="card card-custom h-100">
+            <div class="card-header-custom">
+                <span class="fw-bold"><i class="bi bi-layers-fill text-primary me-2"></i> Beds in Room @Model.RoomNumber (@Model.Beds.Count Total)</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive mb-4">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Bed Identifier</th>
+                                <th>Current Status</th>
+                                <th>Allocated Student</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Beds.Any())
+                            {
+                                @foreach (var bed in Model.Beds.OrderBy(b => b.BedNumber))
+                                {
+                                    var activeAlloc = bed.Allocations.FirstOrDefault(a => a.Status == "Active");
+                                    <tr>
+                                        <td class="fw-bold font-monospace">@bed.BedNumber</td>
+                                        <td>
+                                            <span class="badge-status @(bed.Status == "Available" ? "badge-available" : bed.Status == "Occupied" ? "badge-occupied" : "badge-maintenance")">
+                                                @bed.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (activeAlloc?.Student != null)
+                                            {
+                                                <div>
+                                                    <a asp-controller="Students" asp-action="Details" asp-route-id="@activeAlloc.Student.Id" class="fw-semibold text-dark text-decoration-none">
+                                                        @activeAlloc.Student.FullName
+                                                    </a>
+                                                    <div class="small text-muted">ID: @activeAlloc.Student.StudentId &middot; Since @activeAlloc.AllocationDate.ToString("dd MMM yyyy")</div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">&ndash; None &ndash;</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                @if (bed.Status == "Available")
+                                                {
+                                                    <a asp-controller="Allocations" asp-action="Allocate" class="btn btn-outline-success py-0 px-2" title="Allocate this bed">
+                                                        Allocate
+                                                    </a>
+                                                    <form asp-controller="Beds" asp-action="ToggleMaintenance" asp-route-id="@bed.Id" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-warning py-0 px-2" title="Mark Under Maintenance">
+                                                            Maintenance
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (bed.Status == "Maintenance")
+                                                {
+                                                    <form asp-controller="Beds" asp-action="ToggleMaintenance" asp-route-id="@bed.Id" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-success py-0 px-2">
+                                                            Make Available
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (activeAlloc != null)
+                                                {
+                                                    <a asp-controller="Allocations" asp-action="Transfer" asp-route-id="@activeAlloc.Id" class="btn btn-outline-primary-custom py-0 px-2">
+                                                        Transfer
+                                                    </a>
+                                                    <a asp-controller="Allocations" asp-action="Vacate" asp-route-id="@activeAlloc.Id" class="btn btn-outline-danger py-0 px-2">
+                                                        Vacate
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-3">No beds created for this room yet.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add Individual Bed Form -->
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="border-top pt-3">
+                        <h6 class="fw-bold small text-muted text-uppercase mb-2">Add Additional Bed to Room:</h6>
+                        <form asp-controller="Beds" asp-action="Create" method="post" class="row g-2 align-items-center">
+                            <input type="hidden" name="roomId" value="@Model.Id" />
+                            <div class="col-auto">
+                                <input type="text" name="bedNumber" class="form-control form-control-sm" placeholder="e.g. @Model.RoomNumber-C" required />
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-sm btn-primary-custom">
+                                    <i class="bi bi-plus me-1"></i> Add Bed
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

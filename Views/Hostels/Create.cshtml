@@ -1,0 +1,97 @@
+@model HostelEase.Models.Hostel
+@{
+    ViewData["Title"] = "Add Hostel";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building-add text-primary fs-4"></i>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Create Hostel Hall</h5>
+                        <small class="text-muted">Register a new residential hall on campus</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label asp-for="Name" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Name" class="form-control" placeholder="e.g. Ramanujan Hall of Residence" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Code" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Code" class="form-control" placeholder="e.g. BLK-C" />
+                            <span asp-validation-for="Code" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="HostelType" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="HostelType" class="form-select">
+                                <option value="Boys">Boys</option>
+                                <option value="Girls">Girls</option>
+                                <option value="Co-ed">Co-ed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="TotalFloors" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="TotalFloors" type="number" min="1" max="20" class="form-control" />
+                            <span asp-validation-for="TotalFloors" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Status" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ContactNumber" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="ContactNumber" class="form-control" placeholder="+91 98765 00000" />
+                            <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AssignedWardenId" class="form-label small fw-semibold text-secondary"></label>
+                            <select asp-for="AssignedWardenId" class="form-select" asp-items="ViewBag.Wardens">
+                                <option value="">-- Select Chief Warden --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Address" class="form-label small fw-semibold text-secondary"></label>
+                            <input asp-for="Address" class="form-control" placeholder="Campus Sector & Street Location" />
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label small fw-semibold text-secondary"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Facilities, amenities, mess notes..."></textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1">Create Hostel</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

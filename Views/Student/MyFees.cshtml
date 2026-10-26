@@ -1,0 +1,74 @@
+@model IEnumerable<HostelEase.Models.StudentFee>
+@{
+    ViewData["Title"] = "My Hostel Fees";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Hostel Fee Obligations</h4>
+        <p class="text-muted small mb-0">Record of assigned hostel terms, balances, and payment statuses</p>
+    </div>
+    <a asp-action="PaymentHistory" class="btn btn-outline-primary-custom btn-sm">
+        <i class="bi bi-receipt me-1"></i> View Payment History
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Fee Title</th>
+                    <th>Due Date</th>
+                    <th>Total Fee</th>
+                    <th>Paid Amount</th>
+                    <th>Balance Due</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var fee in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">@fee.FeeTitle</div>
+                                <div class="small text-muted">Created on @fee.CreatedAt.ToString("dd MMM yyyy")</div>
+                            </td>
+                            <td class="small">@fee.DueDate.ToString("dd MMM yyyy")</td>
+                            <td class="fw-bold">₹@fee.TotalAmount.ToString("N2")</td>
+                            <td class="fw-semibold text-success">₹@fee.PaidAmount.ToString("N2")</td>
+                            <td class="fw-bold @(fee.BalanceAmount > 0 ? "text-danger" : "text-secondary")">
+                                ₹@fee.BalanceAmount.ToString("N2")
+                            </td>
+                            <td>
+                                <span class="badge @(fee.Status == "Paid" ? "bg-success" : fee.Status == "Partially Paid" ? "bg-info text-dark" : "bg-danger")">
+                                    @fee.Status
+                                </span>
+                            </td>
+                            <td>
+                                @if (fee.Payments.Any())
+                                {
+                                    var latestPayment = fee.Payments.OrderByDescending(p => p.PaymentDate).First();
+                                    <a asp-controller="Fees" asp-action="Receipt" asp-route-id="@latestPayment.Id" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Print Receipt">
+                                        <i class="bi bi-receipt"></i> Receipt
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Pay at Office</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No fee obligations found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
